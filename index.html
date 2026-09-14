@@ -54,6 +54,10 @@
   header .status i{width:7px;height:7px;border-radius:50%;background:#5fd9a4;display:inline-block;}
   header .status.offline i{background:#e9a05e;}
   header p{margin:2px 0 0;font-size:11.5px;color:#c9d3e6;}
+  .gestorbtn{background:none;border:1px solid rgba(255,255,255,.35);color:#c9d3e6;font-size:10.5px;font-weight:700;
+    border-radius:20px;padding:3px 10px;cursor:pointer;margin-left:auto;white-space:nowrap;}
+  .gestorbtn:hover{border-color:rgba(255,255,255,.6);}
+  .gestorbtn.on{background:#5fd9a4;color:#0b3b2a;border-color:transparent;}
 
   .toolbar{position:sticky;top:53px;z-index:5;background:var(--surface);border-bottom:1px solid var(--line);
     padding:10px 22px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;}
@@ -131,9 +135,14 @@
   .pessoa .nuc{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:4px;flex-shrink:0;}
   .pessoa.ghost{background:none;border:1px dashed var(--line);color:var(--muted);font-style:italic;padding-right:7px;}
   .pessoa .rm{position:absolute;right:3px;top:50%;transform:translateY(-50%);width:13px;height:13px;line-height:13px;text-align:center;
-    border-radius:50%;color:var(--muted);cursor:pointer;font-size:11px;opacity:0;transition:opacity .15s;}
-  .pessoa:hover .rm{opacity:1;}
+    border-radius:50%;color:var(--muted);cursor:pointer;font-size:11px;opacity:0;transition:opacity .15s;display:none;}
+  .pessoa .edit{position:absolute;right:17px;top:50%;transform:translateY(-50%);width:13px;height:13px;line-height:13px;text-align:center;
+    border-radius:50%;color:var(--muted);cursor:pointer;font-size:10px;opacity:0;transition:opacity .15s;display:none;}
+  body.gestor-on .pessoa{padding-right:34px;}
+  body.gestor-on .pessoa .rm, body.gestor-on .pessoa .edit{display:inline-block;}
+  .pessoa:hover .rm, .pessoa:hover .edit{opacity:1;}
   .pessoa .rm:hover{background:var(--danger-bg);color:var(--danger);}
+  .pessoa .edit:hover{background:var(--chip-bg);color:var(--accent);}
 
   .kpirow{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px;}
   .kpi{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;}
@@ -211,6 +220,7 @@
   <div class="row">
     <h1 class="brand">AGENDA eMULTI 5</h1>
     <span class="status offline" id="statusPill"><i></i><span id="statusText">conectando…</span></span>
+    <button class="gestorbtn" id="gestorBtn" type="button">🔒 Gestor</button>
   </div>
   <p>Território → dia → turno → atividade. Cada profissional lança o próprio horário aqui.</p>
 </header>
@@ -238,7 +248,7 @@
 
 <div class="modal-bg" id="modalBg">
   <div class="modal">
-    <h2>Novo registro</h2>
+    <h2 id="modalTitle">Novo registro</h2>
     <div class="sub">O lançamento entra na hora na agenda e no painel de todo mundo.</div>
     <div class="field"><label>Data</label>
       <input id="f_data" type="date">
@@ -385,6 +395,7 @@ function renderSemanaChips(){
 }
 
 async function removeRegistro(id){
+  if(!isGestor){ showToast('Entre no modo gestor (🔒 no topo) para remover um registro.'); return; }
   if(!dbRef) return;
   const removed = ROWS.find(r=>r.id===id);
   try{
@@ -393,6 +404,22 @@ async function removeRegistro(id){
   }catch(e){
     showToast('Não deu para remover agora. Tente de novo.');
   }
+}
+
+function editRegistro(id){
+  if(!isGestor){ showToast('Entre no modo gestor (🔒 no topo) para editar um registro.'); return; }
+  const r = ROWS.find(x=>x.id===id);
+  if(!r) return;
+  editingId = id;
+  fData.value = r.data;
+  document.getElementById('f_turno').value = r.turno;
+  fTerr.value = r.territorio;
+  fProf.value = r.profissional || '';
+  updateAutofill();
+  fAtiv.querySelectorAll('input[type="checkbox"]').forEach(cb=>{ cb.checked = (cb.value===r.atividade); });
+  document.getElementById('f_obs').value = r.obs || '';
+  setModalMode();
+  modalBg.classList.add('open');
 }
 
 function renderAgenda(){
@@ -432,10 +459,10 @@ function renderAgenda(){
               const papelAbbr = info.papel==='Preceptor(a)' ? 'Prec.' : 'Res.';
               const nucAbbr = info.nuc ? ` · ${info.nuc} (${papelAbbr})` : '';
               const title = r.obs ? ` title="${r.obs.replace(/"/g,'&quot;')}"` : '';
-              return `<span class="pessoa"${title}><span class="nuc" style="background:${dotColor}"></span><b>${r.profissional}</b>${nucAbbr}<span class="rm" data-id="${r.id}" title="Remover">✕</span></span>`;
+              return `<span class="pessoa"${title}><span class="nuc" style="background:${dotColor}"></span><b>${r.profissional}</b>${nucAbbr}<span class="edit" data-id="${r.id}" title="Editar">✎</span><span class="rm" data-id="${r.id}" title="Remover">✕</span></span>`;
             }
             const title = r.obs ? ` title="${r.obs.replace(/"/g,'&quot;')}"` : '';
-            return `<span class="pessoa ghost"${title}>Equipe completa<span class="rm" data-id="${r.id}" title="Remover">✕</span></span>`;
+            return `<span class="pessoa ghost"${title}>Equipe completa<span class="edit" data-id="${r.id}" title="Editar">✎</span><span class="rm" data-id="${r.id}" title="Remover">✕</span></span>`;
           }).join('');
           bodyRows += `<tr><td class="dia">${fmtDia(dataISO)}</td><td class="turno">${turno}</td><td class="ativ">${ativ}</td><td>${pessoas}</td></tr>`;
         });
@@ -451,6 +478,9 @@ function renderAgenda(){
   target.innerHTML = html;
   target.querySelectorAll('.rm').forEach(el=>{
     el.addEventListener('click', (e)=>{ e.stopPropagation(); removeRegistro(el.dataset.id); });
+  });
+  target.querySelectorAll('.edit').forEach(el=>{
+    el.addEventListener('click', (e)=>{ e.stopPropagation(); editRegistro(el.dataset.id); });
   });
   target.querySelectorAll('.pdfbtn').forEach(el=>{
     el.addEventListener('click', (e)=>{ e.stopPropagation(); gerarPdfTerritorio(el.dataset.pdfterr, el); });
@@ -653,6 +683,38 @@ function renderPainel(){
 const modalBg = document.getElementById('modalBg');
 const fTerr = document.getElementById('f_terr'), fProf = document.getElementById('f_prof'),
       fAtiv = document.getElementById('f_ativ'), fData = document.getElementById('f_data');
+
+// ---------- modo gestor ----------
+const GESTOR_PIN = '96567936';
+let isGestor = (localStorage.getItem('agendaEmultiGestor') === '1');
+let editingId = null;
+const gestorBtn = document.getElementById('gestorBtn');
+function updateGestorUI(){
+  gestorBtn.textContent = isGestor ? '🔓 Gestor ativo' : '🔒 Gestor';
+  gestorBtn.classList.toggle('on', isGestor);
+  document.body.classList.toggle('gestor-on', isGestor);
+}
+function setGestor(v){
+  isGestor = v;
+  try{ localStorage.setItem('agendaEmultiGestor', v ? '1' : '0'); }catch(e){}
+  updateGestorUI();
+  renderAgenda();
+}
+gestorBtn.onclick = () => {
+  if(isGestor){
+    if(confirm('Sair do modo gestor?')) setGestor(false);
+  } else {
+    const pin = prompt('Digite o PIN de gestor:');
+    if(pin === null) return;
+    if(pin.trim() === GESTOR_PIN){ setGestor(true); showToast('Modo gestor ativado.'); }
+    else showToast('PIN incorreto.');
+  }
+};
+updateGestorUI();
+function setModalMode(){
+  document.getElementById('modalTitle').textContent = editingId ? 'Editar registro' : 'Novo registro';
+  document.getElementById('modalSave').textContent = editingId ? 'Salvar alterações' : 'Salvar registro';
+}
 TERRITORIOS.forEach(t=>{ const o=document.createElement('option'); o.value=t; o.textContent=t; fTerr.appendChild(o); });
 PROFISSIONAIS.forEach(([nome])=>{ const o=document.createElement('option'); o.value=nome; o.textContent=nome; fProf.appendChild(o); });
 ATIVIDADES.forEach(a=>{
@@ -669,11 +731,16 @@ function updateAutofill(){
 fProf.addEventListener('change', updateAutofill);
 
 document.getElementById('addBtn').onclick = () => {
+  editingId = null;
+  document.getElementById('f_obs').value = '';
+  fProf.value = '';
+  fAtiv.querySelectorAll('input[type="checkbox"]').forEach(cb=>cb.checked=false);
   if(!fData.value) fData.value = todayISO();
   updateAutofill();
+  setModalMode();
   modalBg.classList.add('open');
 };
-document.getElementById('modalCancel').onclick = () => { modalBg.classList.remove('open'); };
+document.getElementById('modalCancel').onclick = () => { editingId = null; setModalMode(); modalBg.classList.remove('open'); };
 modalBg.addEventListener('click', e => { if(e.target===modalBg) modalBg.classList.remove('open'); });
 
 document.getElementById('modalSave').onclick = async () => {
@@ -684,23 +751,45 @@ document.getElementById('modalSave').onclick = async () => {
   if(!data){ showToast('Escolha uma data.'); return; }
   if(ativs.length===0){ showToast('Marque ao menos uma atividade.'); return; }
   if(!dbRef){ showToast('Sem conexão com o banco agora — tente novamente em instantes.'); return; }
+  if(editingId && !isGestor){ showToast('Entre no modo gestor para salvar a edição.'); return; }
   const saveBtn = document.getElementById('modalSave');
   saveBtn.disabled = true; saveBtn.textContent = 'Salvando…';
   try{
-    await Promise.all(ativs.map(ativ => dbRef.collection('registros').add({
-      data, turno, territorio: terr, profissional: prof, atividade: ativ, obs,
-      criadoEm: new Date().toISOString()
-    })));
-    modalBg.classList.remove('open');
-    state.ym = ymOf(data); state.week = mondayOf(data);
-    document.getElementById('f_obs').value = '';
-    fAtiv.querySelectorAll('input[type="checkbox"]').forEach(cb=>cb.checked=false);
-    const resumoAtiv = ativs.length===1 ? ativs[0] : `${ativs.length} atividades`;
-    showToast(`Registro salvo: ${terr} · ${turno} · ${resumoAtiv}${prof ? ' · '+prof : ''}`);
+    if(editingId){
+      const [primeira, ...resto] = ativs;
+      await dbRef.doc('registros/'+editingId).set({
+        data, turno, territorio: terr, profissional: prof, atividade: primeira, obs,
+        criadoEm: new Date().toISOString()
+      });
+      if(resto.length){
+        await Promise.all(resto.map(ativ => dbRef.collection('registros').add({
+          data, turno, territorio: terr, profissional: prof, atividade: ativ, obs,
+          criadoEm: new Date().toISOString()
+        })));
+      }
+      modalBg.classList.remove('open');
+      state.ym = ymOf(data); state.week = mondayOf(data);
+      editingId = null;
+      setModalMode();
+      document.getElementById('f_obs').value = '';
+      fAtiv.querySelectorAll('input[type="checkbox"]').forEach(cb=>cb.checked=false);
+      showToast('Registro atualizado.');
+    } else {
+      await Promise.all(ativs.map(ativ => dbRef.collection('registros').add({
+        data, turno, territorio: terr, profissional: prof, atividade: ativ, obs,
+        criadoEm: new Date().toISOString()
+      })));
+      modalBg.classList.remove('open');
+      state.ym = ymOf(data); state.week = mondayOf(data);
+      document.getElementById('f_obs').value = '';
+      fAtiv.querySelectorAll('input[type="checkbox"]').forEach(cb=>cb.checked=false);
+      const resumoAtiv = ativs.length===1 ? ativs[0] : `${ativs.length} atividades`;
+      showToast(`Registro salvo: ${terr} · ${turno} · ${resumoAtiv}${prof ? ' · '+prof : ''}`);
+    }
   }catch(e){
     showToast('Não foi possível salvar. Tente de novo em instantes.');
   }finally{
-    saveBtn.disabled = false; saveBtn.textContent = 'Salvar registro';
+    saveBtn.disabled = false; saveBtn.textContent = editingId ? 'Salvar alterações' : 'Salvar registro';
   }
 };
 
