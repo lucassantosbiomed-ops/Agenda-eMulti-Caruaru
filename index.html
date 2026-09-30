@@ -173,19 +173,22 @@
   td.ativ{font-weight:700;color:var(--navy);width:190px;}
   :root[data-theme="dark"] td.ativ, body[data-force-dark] td.ativ{color:#8fb1e6;}
   @media (prefers-color-scheme:dark){ :root:not([data-theme="light"]) td.ativ{color:#8fb1e6;} }
-  .pessoa{position:relative;display:inline-flex;align-items:center;background:var(--chip-bg);border-radius:6px;padding:2px 20px 2px 7px;margin:1px 3px 1px 0;font-size:11px;white-space:nowrap;}
+  .pessoa,.ativ-chip{position:relative;display:inline-flex;align-items:center;background:var(--chip-bg);border-radius:6px;padding:2px 20px 2px 7px;margin:1px 3px 1px 0;font-size:11px;white-space:nowrap;}
   .pessoa b{font-weight:700;}
   .pessoa .nuc{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:4px;flex-shrink:0;}
   .pessoa.ghost{background:none;border:1px dashed var(--line);color:var(--muted);font-style:italic;padding-right:7px;}
-  .pessoa .rm{position:absolute;right:3px;top:50%;transform:translateY(-50%);width:13px;height:13px;line-height:13px;text-align:center;
+  .ativ-chip{font-weight:700;color:var(--navy);}
+  :root[data-theme="dark"] .ativ-chip, body[data-force-dark] .ativ-chip{color:#8fb1e6;}
+  @media (prefers-color-scheme:dark){ :root:not([data-theme="light"]) .ativ-chip{color:#8fb1e6;} }
+  .pessoa .rm,.ativ-chip .rm{position:absolute;right:3px;top:50%;transform:translateY(-50%);width:13px;height:13px;line-height:13px;text-align:center;
     border-radius:50%;color:var(--muted);cursor:pointer;font-size:11px;opacity:0;transition:opacity .15s;display:none;}
-  .pessoa .edit{position:absolute;right:17px;top:50%;transform:translateY(-50%);width:13px;height:13px;line-height:13px;text-align:center;
+  .pessoa .edit,.ativ-chip .edit{position:absolute;right:17px;top:50%;transform:translateY(-50%);width:13px;height:13px;line-height:13px;text-align:center;
     border-radius:50%;color:var(--muted);cursor:pointer;font-size:10px;opacity:0;transition:opacity .15s;display:none;}
-  body.gestor-on .pessoa{padding-right:34px;}
-  body.gestor-on .pessoa .rm, body.gestor-on .pessoa .edit{display:inline-block;}
-  .pessoa:hover .rm, .pessoa:hover .edit{opacity:1;}
-  .pessoa .rm:hover{background:var(--danger-bg);color:var(--danger);}
-  .pessoa .edit:hover{background:var(--chip-bg);color:var(--accent);}
+  body.gestor-on .pessoa,body.gestor-on .ativ-chip{padding-right:34px;}
+  body.gestor-on .pessoa .rm,body.gestor-on .pessoa .edit,body.gestor-on .ativ-chip .rm,body.gestor-on .ativ-chip .edit{display:inline-block;}
+  .pessoa:hover .rm,.pessoa:hover .edit,.ativ-chip:hover .rm,.ativ-chip:hover .edit{opacity:1;}
+  .pessoa .rm:hover,.ativ-chip .rm:hover{background:var(--danger-bg);color:var(--danger);}
+  .pessoa .edit:hover,.ativ-chip .edit:hover{background:var(--chip-bg);color:var(--accent);}
 
   td.ag-actions{white-space:nowrap;width:50px;}
   td.ag-actions .edit, td.ag-actions .rm{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;
@@ -443,7 +446,8 @@
 
 <script>
 // ---------- referência fixa da equipe (núcleo, papel, cores) ----------
-const TERRITORIOS = ["Peladas","Nina Liberato","LBT I","LBT II","Taquara","Alto do Moura","Cajá","Kennedy I","Caiucá I","Caiucá II","Geral / ASCES / Outros"];
+const TERRITORIOS = ["Peladas","Nina Liberato","LBT I e II","Taquara","Alto do Moura","Cajá","Kennedy I","Caiucá I","Caiucá II","Geral / ASCES / Outros"];
+const TERRITORIOS_ANTIGOS = {"LBT I":"LBT I e II","LBT II":"LBT I e II"}; // unidades antigas -> unificada (LBT I e II ocupam o mesmo prédio)
 const TERR_TINT = ["F3D7D7","F3E6D7","F0F3D7","E1F3D7","D7F3DC","D7F3EB","D7EBF3","D7DCF3","E1D7F3","F0D7F3","F3D7E6"];
 const TERR_COLOR = {}; TERRITORIOS.forEach((t,i)=> TERR_COLOR[t] = '#'+TERR_TINT[i % TERR_TINT.length]);
 
@@ -659,21 +663,39 @@ function renderAgenda(){
       ['Manhã','Tarde'].forEach(turno=>{
         const turnoData = byTerr[terr][dataISO][turno];
         if(!turnoData) return;
+        // Agrupa por profissional (em vez de por atividade), juntando todas as
+        // atividades daquele profissional naquele turno numa linha só.
+        const byProf = {}; const profOrder = [];
         Object.keys(turnoData).forEach(ativ=>{
+          turnoData[ativ].forEach(r=>{
+            const key = r.profissional || '\u0000equipe';
+            if(!byProf[key]){ byProf[key] = []; profOrder.push(key); }
+            byProf[key].push({ativ, r});
+          });
+        });
+        const profKeys = profOrder.slice().sort((a,b)=>{
+          if(a==='\u0000equipe') return 1;
+          if(b==='\u0000equipe') return -1;
+          return a.localeCompare(b,'pt-BR');
+        });
+        profKeys.forEach(key=>{
           n++;
-          const pessoas = turnoData[ativ].map(r=>{
-            if(r.profissional){
-              const info = PROF_LOOKUP[r.profissional] || {nuc:'',papel:''};
-              const dotColor = NUCLEO_COLOR[info.nuc] || '#999';
-              const papelAbbr = info.papel==='Preceptor(a)' ? 'Prec.' : 'Res.';
-              const nucAbbr = info.nuc ? ` · ${info.nuc} (${papelAbbr})` : '';
-              const title = r.obs ? ` title="${r.obs.replace(/"/g,'&quot;')}"` : '';
-              return `<span class="pessoa"${title}><span class="nuc" style="background:${dotColor}"></span><b>${r.profissional}</b>${nucAbbr}<span class="edit" data-id="${r.id}" title="Editar">✎</span><span class="rm" data-id="${r.id}" title="Remover">✕</span></span>`;
-            }
+          const entries = byProf[key];
+          let profHtml;
+          if(key==='\u0000equipe'){
+            profHtml = `<span class="pessoa ghost">Equipe completa</span>`;
+          } else {
+            const info = PROF_LOOKUP[key] || {nuc:'',papel:''};
+            const dotColor = NUCLEO_COLOR[info.nuc] || '#999';
+            const papelAbbr = info.papel==='Preceptor(a)' ? 'Prec.' : 'Res.';
+            const nucAbbr = info.nuc ? ` · ${info.nuc} (${papelAbbr})` : '';
+            profHtml = `<span class="pessoa"><span class="nuc" style="background:${dotColor}"></span><b>${key}</b>${nucAbbr}</span>`;
+          }
+          const ativChips = entries.map(({ativ, r})=>{
             const title = r.obs ? ` title="${r.obs.replace(/"/g,'&quot;')}"` : '';
-            return `<span class="pessoa ghost"${title}>Equipe completa<span class="edit" data-id="${r.id}" title="Editar">✎</span><span class="rm" data-id="${r.id}" title="Remover">✕</span></span>`;
+            return `<span class="ativ-chip"${title}>${ativ}<span class="edit" data-id="${r.id}" title="Editar">✎</span><span class="rm" data-id="${r.id}" title="Remover">✕</span></span>`;
           }).join('');
-          bodyRows += `<tr><td class="dia">${fmtDia(dataISO)}</td><td class="turno">${turno}</td><td class="ativ">${ativ}</td><td>${pessoas}</td></tr>`;
+          bodyRows += `<tr><td class="dia">${fmtDia(dataISO)}</td><td class="turno">${turno}</td><td>${profHtml}</td><td>${ativChips}</td></tr>`;
         });
       });
     });
@@ -681,7 +703,7 @@ function renderAgenda(){
       <div class="terr-head" style="border-left-color:${color}"><span>${terr}</span><span class="count">${n} lançamento${n===1?'':'s'}</span>
         <button class="pdfbtn" data-pdfterr="${terr.replace(/"/g,'&quot;')}" title="Gerar PDF da agenda de ${terr} em ${monthLabel(state.ym)}"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 1.5h5.5L12.5 4.5V14a.5.5 0 0 1-.5.5H4a.5.5 0 0 1-.5-.5V2a.5.5 0 0 1 .5-.5Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M9.5 1.5V4a.5.5 0 0 0 .5.5h2.5" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M5.5 8.2h5M5.5 10.6h3.2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>PDF do mês</button>
       </div>
-      <table class="compact"><thead><tr><th>Dia</th><th>Turno</th><th>Atividade</th><th>Equipe</th></tr></thead><tbody>${bodyRows}</tbody></table>
+      <table class="compact"><thead><tr><th>Dia</th><th>Turno</th><th>Profissional</th><th>Atividades</th></tr></thead><tbody>${bodyRows}</tbody></table>
     </div>`;
   });
   target.innerHTML = html;
@@ -834,31 +856,31 @@ function pdfCardHtml(porData, dataISO){
     const entradas = porData[dataISO][turno];
     if(!entradas || entradas.length===0) return;
     body += `<div class="pdf-turno-lbl">${turno}</div>`;
-    // agrupar por atividade: quem faz a mesma atividade naquele turno aparece junto,
-    // com o nome da atividade uma única vez abaixo da lista de pessoas
-    const porAtividade = {}; const ordemAtividade = [];
+    // agrupar por profissional: as atividades dele(a) naquele turno aparecem juntas,
+    // com o nome da pessoa uma única vez acima da lista de atividades
+    const porProf = {}; const ordemProf = [];
     entradas.forEach(r=>{
-      if(!porAtividade[r.atividade]){ porAtividade[r.atividade]=[]; ordemAtividade.push(r.atividade); }
-      porAtividade[r.atividade].push(r);
+      const key = r.profissional || '__equipe__';
+      if(!porProf[key]){ porProf[key]=[]; ordemProf.push(key); }
+      porProf[key].push(r.atividade);
     });
-    ordemAtividade.forEach(ativ=>{
-      const vistos = new Set();
-      const linhas = [];
-      porAtividade[ativ].forEach(r=>{
-        const key = r.profissional || '__equipe__';
-        if(vistos.has(key)) return; vistos.add(key);
-        if(key==='__equipe__'){
-          linhas.push(`<div class="pdf-person"><div class="pdf-titulo">Equipe completa</div></div>`);
-        } else {
-          const info = PROF_LOOKUP[key] || {nuc:'',papel:''};
-          const titulo = NUCLEO_TITULO[info.nuc] || info.nuc || '';
-          const papelCurto = (info.papel||'').replace('(a)','').trim();
-          const papelHtml = papelCurto==='Preceptor' ? '<b>Preceptor</b>' : papelCurto;
-          const tituloLabel = titulo ? `${titulo}${papelHtml?` (${papelHtml})`:''}` : key;
-          linhas.push(`<div class="pdf-person"><div class="pdf-titulo">${tituloLabel}</div><div class="pdf-nome">${key}</div></div>`);
-        }
-      });
-      body += `<div class="pdf-group">${linhas.join('')}<div class="pdf-atividade">${ativ}</div></div>`;
+    ordemProf.forEach(key=>{
+      const vistas = new Set();
+      const ativsUnicas = [];
+      porProf[key].forEach(a=>{ if(!vistas.has(a)){ vistas.add(a); ativsUnicas.push(a); } });
+      let personHtml;
+      if(key==='__equipe__'){
+        personHtml = `<div class="pdf-person"><div class="pdf-titulo">Equipe completa</div></div>`;
+      } else {
+        const info = PROF_LOOKUP[key] || {nuc:'',papel:''};
+        const titulo = NUCLEO_TITULO[info.nuc] || info.nuc || '';
+        const papelCurto = (info.papel||'').replace('(a)','').trim();
+        const papelHtml = papelCurto==='Preceptor' ? '<b>Preceptor</b>' : papelCurto;
+        const tituloLabel = titulo ? `${titulo}${papelHtml?` (${papelHtml})`:''}` : key;
+        personHtml = `<div class="pdf-person"><div class="pdf-titulo">${tituloLabel}</div><div class="pdf-nome">${key}</div></div>`;
+      }
+      const ativsHtml = ativsUnicas.map(a=>`<div class="pdf-atividade">${a}</div>`).join('');
+      body += `<div class="pdf-group">${personHtml}${ativsHtml}</div>`;
     });
   });
   return `<div class="pdf-card"><div class="pill">${pillLabel}</div><div class="body">${body}</div></div>`;
@@ -1280,11 +1302,29 @@ function updateGestorUI(){
   gestorBtn.classList.toggle('on', isGestor);
   document.body.classList.toggle('gestor-on', isGestor);
 }
+let migracaoTerritoriosFeita = false;
+async function migrarTerritoriosAntigos(){
+  if(migracaoTerritoriosFeita || !dbRef) return;
+  migracaoTerritoriosFeita = true;
+  const regsAntigos = ROWS.filter(r => TERRITORIOS_ANTIGOS[r.territorio]);
+  const agsAntigos = AGENDAMENTOS.filter(a => TERRITORIOS_ANTIGOS[a.unidade]);
+  if(regsAntigos.length===0 && agsAntigos.length===0) return;
+  try{
+    await Promise.all([
+      ...regsAntigos.map(r => dbRef.collection('registros').doc(r.id).update({territorio: TERRITORIOS_ANTIGOS[r.territorio]})),
+      ...agsAntigos.map(a => dbRef.collection('agendamentos').doc(a.id).update({unidade: TERRITORIOS_ANTIGOS[a.unidade]}))
+    ]);
+    showToast(`${regsAntigos.length + agsAntigos.length} registro(s) de LBT I/LBT II foram unificados em "LBT I e II".`);
+  }catch(e){
+    migracaoTerritoriosFeita = false; // permite tentar de novo na próxima vez que entrar como gestor
+  }
+}
 function setGestor(v){
   isGestor = v;
   try{ localStorage.setItem('agendaEmultiGestor', v ? '1' : '0'); }catch(e){}
   updateGestorUI();
   render();
+  if(v) migrarTerritoriosAntigos();
 }
 gestorBtn.onclick = () => {
   if(isGestor){
@@ -1721,5 +1761,6 @@ init();
   };
 })();
 </script>
+
 </body>
 </html>
