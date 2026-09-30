@@ -155,7 +155,23 @@
   .pdf-titulo{font-size:11px;font-weight:500;color:#111;line-height:1.3;}
   .pdf-titulo b{font-weight:800;}
   .pdf-nome{font-size:9px;color:#9aa0a6;line-height:1.3;margin-top:1px;}
-  .pdf-atividade{font-size:9.5px;font-weight:800;color:#008C4F;letter-spacing:.2px;margin-top:5px;}
+  .pdf-atividade{font-size:9.5px;font-weight:800;color:#008C4F;letter-spacing:.2px;margin-top:5px;line-height:1.35;}
+  /* níveis de compactação: aplicados numa página inteira (todos os cards juntos, pra manter
+     visual uniforme) só quando o conteúdo do dia é grande demais pra caber na página do PDF */
+  .pdf-page.compact .pdf-card .body{padding:7px 9px 9px;}
+  .pdf-page.compact .pdf-group{margin-bottom:6px;padding-bottom:5px;}
+  .pdf-page.compact .pdf-person{margin-bottom:3px;}
+  .pdf-page.compact .pdf-titulo{font-size:10px;}
+  .pdf-page.compact .pdf-nome{font-size:8px;}
+  .pdf-page.compact .pdf-atividade{font-size:8.5px;margin-top:3px;line-height:1.25;}
+  .pdf-page.compact .pdf-turno-lbl{margin:5px 0 2px;}
+  .pdf-page.compact2 .pdf-card .body{padding:6px 8px 7px;}
+  .pdf-page.compact2 .pdf-group{margin-bottom:4px;padding-bottom:3px;}
+  .pdf-page.compact2 .pdf-person{margin-bottom:2px;}
+  .pdf-page.compact2 .pdf-titulo{font-size:9px;}
+  .pdf-page.compact2 .pdf-nome{font-size:7.5px;}
+  .pdf-page.compact2 .pdf-atividade{font-size:7.5px;margin-top:2px;line-height:1.2;}
+  .pdf-page.compact2 .pdf-turno-lbl{margin:4px 0 1px;font-size:8.5px;}
   .pdf-foot{text-align:center;font-size:8.5px;color:#b0b5bc;margin-top:10px;}
   .pdf-ag-table{width:100%;border-collapse:collapse;font-size:9.3px;margin-top:10px;}
   .pdf-ag-table th{background:#1b4024;color:#fff;font-size:8.6px;text-transform:uppercase;letter-spacing:.3px;text-align:left;padding:6px 7px;}
@@ -240,6 +256,7 @@
   .modal-bg{display:none;position:fixed;inset:0;background:rgba(20,25,35,.5);z-index:20;align-items:center;justify-content:center;padding:16px;}
   .modal-bg.open{display:flex;}
   .modal{background:var(--surface);color:var(--ink);border-radius:12px;padding:22px 24px;width:420px;max-width:100%;max-height:88vh;overflow:auto;box-shadow:var(--shadow);}
+  .modal.cal-day-modal{width:620px;}
   .modal h2{margin:0 0 4px;font-size:15px;color:var(--navy);}
   @media (prefers-color-scheme:dark){ :root:not([data-theme="light"]) .modal h2{color:#8fb1e6;} }
   :root[data-theme="dark"] .modal h2{color:#8fb1e6;}
@@ -781,7 +798,7 @@ function renderAgendaCalendario(){
       <div class="cal-grid">${cellsHtml}</div>
     </div>
     <div class="modal-bg" id="calDayBg">
-      <div class="modal">
+      <div class="modal cal-day-modal">
         <h2 id="calDayTitle">Dia</h2>
         <div id="calDayBody"></div>
         <div class="modal-actions">
@@ -817,16 +834,44 @@ function openCalDay(iso){
       const color = TERR_COLOR[terr] || '#ccc';
       html += `<div class="cal-day-terr">
         <div class="cal-day-terr-head" style="border-left-color:${color}">${terr}</div>
-        <table class="compact"><thead><tr><th>Turno</th><th>Atividade</th><th>Equipe</th></tr></thead><tbody>`;
-      byTerr[terr]
-        .slice()
-        .sort((a,b)=> (a.turno==='Manhã'?0:1) - (b.turno==='Manhã'?0:1))
-        .forEach(r=>{
-          const pessoa = r.profissional
-            ? `<span class="pessoa"><b>${r.profissional}</b></span>`
-            : `<span class="pessoa ghost">Equipe completa</span>`;
-          html += `<tr><td class="turno">${r.turno}</td><td class="ativ">${r.atividade}</td><td>${pessoa}<span class="edit" data-id="${r.id}" title="Editar">✎</span><span class="rm" data-id="${r.id}" title="Remover">✕</span></td></tr>`;
+        <table class="compact"><thead><tr><th>Turno</th><th>Profissional</th><th>Atividades</th></tr></thead><tbody>`;
+      // mesmo agrupamento por profissional da Lista: uma linha por pessoa/turno, com
+      // todas as atividades dela naquele turno juntas (em vez de uma linha por atividade)
+      const porTurno = {};
+      byTerr[terr].forEach(r=>{ (porTurno[r.turno] = porTurno[r.turno] || []).push(r); });
+      ['Manhã','Tarde'].forEach(turno=>{
+        const entradas = porTurno[turno];
+        if(!entradas) return;
+        const byProf = {}; const ordemProf = [];
+        entradas.forEach(r=>{
+          const key = r.profissional || '\u0000equipe';
+          if(!byProf[key]){ byProf[key] = []; ordemProf.push(key); }
+          byProf[key].push(r);
         });
+        const profKeys = ordemProf.slice().sort((a,b)=>{
+          if(a==='\u0000equipe') return 1;
+          if(b==='\u0000equipe') return -1;
+          return a.localeCompare(b,'pt-BR');
+        });
+        profKeys.forEach(key=>{
+          const entries = byProf[key];
+          let profHtml;
+          if(key==='\u0000equipe'){
+            profHtml = `<span class="pessoa ghost">Equipe completa</span>`;
+          } else {
+            const info = PROF_LOOKUP[key] || {nuc:'',papel:''};
+            const dotColor = NUCLEO_COLOR[info.nuc] || '#999';
+            const papelAbbr = info.papel==='Preceptor(a)' ? 'Prec.' : 'Res.';
+            const nucAbbr = info.nuc ? ` · ${info.nuc} (${papelAbbr})` : '';
+            profHtml = `<span class="pessoa"><span class="nuc" style="background:${dotColor}"></span><b>${key}</b>${nucAbbr}</span>`;
+          }
+          const ativChips = entries.map(r=>{
+            const title = r.obs ? ` title="${r.obs.replace(/"/g,'&quot;')}"` : '';
+            return `<span class="ativ-chip"${title}>${r.atividade}<span class="edit" data-id="${r.id}" title="Editar">✎</span><span class="rm" data-id="${r.id}" title="Remover">✕</span></span>`;
+          }).join('');
+          html += `<tr><td class="turno">${turno}</td><td>${profHtml}</td><td>${ativChips}</td></tr>`;
+        });
+      });
       html += `</tbody></table></div>`;
     });
     body.innerHTML = html;
@@ -879,7 +924,9 @@ function pdfCardHtml(porData, dataISO){
         const tituloLabel = titulo ? `${titulo}${papelHtml?` (${papelHtml})`:''}` : key;
         personHtml = `<div class="pdf-person"><div class="pdf-titulo">${tituloLabel}</div><div class="pdf-nome">${key}</div></div>`;
       }
-      const ativsHtml = ativsUnicas.map(a=>`<div class="pdf-atividade">${a}</div>`).join('');
+      // atividades da mesma pessoa juntas numa linha só (em vez de uma linha pra cada),
+      // pra não deixar o card alto demais quando alguém faz várias coisas no turno
+      const ativsHtml = `<div class="pdf-atividade">${ativsUnicas.join(' • ')}</div>`;
       body += `<div class="pdf-group">${personHtml}${ativsHtml}</div>`;
     });
   });
@@ -900,27 +947,81 @@ function montarPaginasPdfTerritorio(terr, rowsMes, logosHtml, sandbox){
     porData[r.data][r.turno].push(r);
   });
   const datasOrdenadas = Object.keys(porData).sort();
-  const PAGE_SIZE = 8; // 4 colunas x 2 linhas por página
-  const paginas = [];
-  for(let i=0;i<datasOrdenadas.length;i+=PAGE_SIZE) paginas.push(datasOrdenadas.slice(i,i+PAGE_SIZE));
+  const MAX_POR_PAGINA = 8; // 4 colunas x 2 linhas: teto visual por página
 
+  // Em vez de um número fixo de dias por página, vai encaixando um dia de cada vez e só
+  // abre página nova quando o conteúdo realmente não cabe mais (ou já bateu o teto de 8).
+  // Assim, num dia com muita gente/atividade lançada, o PDF ganha mais páginas em vez de
+  // espremer o texto — o tamanho da fonte só muda no caso raríssimo de um dia sozinho já
+  // não caber numa página inteira.
   const pageEls = [];
-  paginas.forEach((datasPagina, idx)=>{
+  let paginaAtual, gridAtual, datasNaPagina;
+
+  function novaPagina(){
     const pageDiv = document.createElement('div');
     pageDiv.className = 'pdf-page';
-    const contHtml = paginas.length>1 ? ` (página ${idx+1} de ${paginas.length})` : '';
     pageDiv.innerHTML = `
       <div class="pdf-top">
-        <div><div class="mesano">${monthLabel(state.ym)}</div><div class="sub">Agenda equipe multiprofissional — eMulti 5${contHtml}</div></div>
+        <div><div class="mesano">${monthLabel(state.ym)}</div><div class="sub">Agenda equipe multiprofissional — eMulti 5</div></div>
         <div class="pdf-logos">${logosHtml}</div>
       </div>
       <div class="pdf-unit">${terr}</div>
-      <div class="pdf-grid">${datasPagina.map(d=>pdfCardHtml(porData,d)).join('')}</div>
+      <div class="pdf-grid"></div>
       <div class="pdf-foot">Secretaria Municipal de Saúde de Caruaru - Coordenação de Promoção à Saúde</div>`;
     sandbox.appendChild(pageDiv);
     pageEls.push(pageDiv);
+    paginaAtual = pageDiv;
+    gridAtual = pageDiv.querySelector('.pdf-grid');
+    datasNaPagina = 0;
+  }
+
+  novaPagina();
+  datasOrdenadas.forEach(dataISO=>{
+    if(datasNaPagina >= MAX_POR_PAGINA) novaPagina();
+
+    const wrap = document.createElement('div');
+    wrap.innerHTML = pdfCardHtml(porData, dataISO);
+    const cardEl = wrap.firstElementChild;
+    gridAtual.appendChild(cardEl);
+    datasNaPagina++;
+
+    if(paginaAtual.scrollHeight > 794){
+      if(datasNaPagina === 1){
+        // nem sozinho esse dia coube numa página inteira (caso extremo) — aí sim,
+        // como não dá pra dividir esse card em duas páginas, compacta só essa página
+        ajustarDensidadePagina(paginaAtual);
+      } else {
+        // esse dia estourou o espaço que sobrava nessa página: tira daqui e
+        // recomeça numa página nova só com ele (com fonte normal)
+        gridAtual.removeChild(cardEl);
+        novaPagina();
+        gridAtual.appendChild(cardEl);
+        datasNaPagina = 1;
+        if(paginaAtual.scrollHeight > 794) ajustarDensidadePagina(paginaAtual);
+      }
+    }
   });
+
+  if(pageEls.length > 1){
+    pageEls.forEach((p, idx)=>{
+      const sub = p.querySelector('.pdf-top .sub');
+      if(sub) sub.textContent += ` (página ${idx+1} de ${pageEls.length})`;
+    });
+  }
   return pageEls;
+}
+
+// último recurso: quando um ÚNICO dia sozinho já não cabe numa página inteira (dia com
+// uma quantidade de lançamentos fora do normal), não tem como resolver abrindo mais
+// páginas — nesse caso raro, mede a altura real renderizada e reduz a fonte da página
+// em níveis, até caber sem cortar nada.
+function ajustarDensidadePagina(pageDiv){
+  const niveis = ['', 'compact', 'compact2'];
+  for(const nivel of niveis){
+    pageDiv.classList.remove('compact', 'compact2');
+    if(nivel) pageDiv.classList.add(nivel);
+    if(pageDiv.scrollHeight <= 794) return;
+  }
 }
 
 // desenha todas as páginas (elementos DOM já no sandbox) dentro de um jsPDF já criado
