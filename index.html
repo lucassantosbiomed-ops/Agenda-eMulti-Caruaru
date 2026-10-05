@@ -206,7 +206,13 @@
   .pessoa .rm:hover,.ativ-chip .rm:hover{background:var(--danger-bg);color:var(--danger);}
   .pessoa .edit:hover,.ativ-chip .edit:hover{background:var(--chip-bg);color:var(--accent);outline:1px solid var(--accent);}
 
-  td.ag-actions{white-space:nowrap;width:60px;}
+  .ag-scroll{overflow-x:auto;}
+  table.ag-table td,table.ag-table th{padding:7px 8px;}
+  table.ag-table td.turno{white-space:normal;width:auto;}
+  table.ag-table td.nowrap{white-space:nowrap;}
+  table.ag-table td.ag-nome{min-width:150px;}
+  table.ag-table th.ag-actions-th,table.ag-table td.ag-actions{position:sticky;left:0;background:var(--surface);z-index:1;}
+  td.ag-actions{white-space:nowrap;width:58px;}
   td.ag-actions .edit, td.ag-actions .rm{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;
     border-radius:50%;color:var(--muted);cursor:pointer;font-size:14px;margin-right:2px;}
   td.ag-actions .edit{color:var(--accent);}
@@ -1421,23 +1427,23 @@ function renderAgendamentos(){
     return;
   }
   const rows = list.map(a=>`<tr>
+    <td class="ag-actions"><span class="edit" data-id="${a.id}" title="Editar">✎</span><span class="rm" data-id="${a.id}" title="Remover">✕</span></td>
     <td class="dia">${fmtDia(a.data)}</td>
-    <td class="turno">${a.horario||'—'}</td>
-    <td><b>${a.nome}</b></td>
-    <td class="turno">${fmtDataSimples(a.nascimento)}</td>
-    <td class="turno">${a.cpf||''}</td>
-    <td class="turno">${a.telefone||''}</td>
+    <td class="turno nowrap">${a.horario||'—'}</td>
+    <td class="ag-nome"><b>${a.nome}</b></td>
+    <td class="turno nowrap">${fmtDataSimples(a.nascimento)}</td>
+    <td class="turno nowrap">${a.cpf||''}</td>
+    <td class="turno nowrap">${a.telefone||''}</td>
     <td>${a.demanda}</td>
     <td class="turno">${a.unidade}</td>
     <td class="turno">${a.acs||''}</td>
     <td class="turno" style="text-align:center;"><span class="ver-acolhimento" data-nome="${(a.profissional||'não informado').replace(/"/g,'&quot;')}" title="Ver profissional do acolhimento">👁</span></td>
     <td class="turno">${a.profissionalAtendimento||''}</td>
-    <td class="ag-actions"><span class="edit" data-id="${a.id}" title="Editar">✎</span><span class="rm" data-id="${a.id}" title="Remover">✕</span></td>
   </tr>`).join('');
-  target.innerHTML = `<div class="terr-card">
-    <table class="compact"><thead><tr><th>Data</th><th>Horário</th><th>Paciente</th><th>Nascimento</th><th>CPF</th><th>Telefone</th><th>Demanda</th><th>Unidade</th><th>ACS</th><th>Acolhimento</th><th>Atendimento</th><th></th></tr></thead>
+  target.innerHTML = `<div class="terr-card"><div class="ag-scroll">
+    <table class="compact ag-table"><thead><tr><th class="ag-actions-th">Ações</th><th>Data</th><th>Horário</th><th>Paciente</th><th>Nascimento</th><th>CPF</th><th>Telefone</th><th>Demanda</th><th>Unidade</th><th>ACS</th><th>Acolhimento</th><th>Atendimento</th></tr></thead>
     <tbody>${rows}</tbody></table>
-  </div>`;
+  </div></div>`;
   target.querySelectorAll('.ag-actions .rm').forEach(el=>{
     el.addEventListener('click', ()=>removeAgendamento(el.dataset.id));
   });
