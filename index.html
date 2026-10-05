@@ -196,19 +196,20 @@
   .ativ-chip{font-weight:700;color:var(--navy);}
   :root[data-theme="dark"] .ativ-chip, body[data-force-dark] .ativ-chip{color:#8fb1e6;}
   @media (prefers-color-scheme:dark){ :root:not([data-theme="light"]) .ativ-chip{color:#8fb1e6;} }
-  .pessoa .rm,.ativ-chip .rm{position:absolute;right:3px;top:50%;transform:translateY(-50%);width:13px;height:13px;line-height:13px;text-align:center;
-    border-radius:50%;color:var(--muted);cursor:pointer;font-size:11px;opacity:0;transition:opacity .15s;display:none;}
-  .pessoa .edit,.ativ-chip .edit{position:absolute;right:17px;top:50%;transform:translateY(-50%);width:13px;height:13px;line-height:13px;text-align:center;
-    border-radius:50%;color:var(--muted);cursor:pointer;font-size:10px;opacity:0;transition:opacity .15s;display:none;}
-  body.gestor-on .pessoa,body.gestor-on .ativ-chip{padding-right:34px;}
+  .pessoa .rm,.ativ-chip .rm{position:absolute;right:3px;top:50%;transform:translateY(-50%);width:16px;height:16px;line-height:16px;text-align:center;
+    border-radius:50%;color:var(--muted);cursor:pointer;font-size:11px;opacity:.55;transition:opacity .15s,background .15s;display:none;}
+  .pessoa .edit,.ativ-chip .edit{position:absolute;right:20px;top:50%;transform:translateY(-50%);width:16px;height:16px;line-height:16px;text-align:center;
+    border-radius:50%;color:var(--accent);cursor:pointer;font-size:12px;opacity:.8;transition:opacity .15s,background .15s;display:none;}
+  body.gestor-on .pessoa,body.gestor-on .ativ-chip{padding-right:40px;}
   body.gestor-on .pessoa .rm,body.gestor-on .pessoa .edit,body.gestor-on .ativ-chip .rm,body.gestor-on .ativ-chip .edit{display:inline-block;}
   .pessoa:hover .rm,.pessoa:hover .edit,.ativ-chip:hover .rm,.ativ-chip:hover .edit{opacity:1;}
   .pessoa .rm:hover,.ativ-chip .rm:hover{background:var(--danger-bg);color:var(--danger);}
-  .pessoa .edit:hover,.ativ-chip .edit:hover{background:var(--chip-bg);color:var(--accent);}
+  .pessoa .edit:hover,.ativ-chip .edit:hover{background:var(--chip-bg);color:var(--accent);outline:1px solid var(--accent);}
 
-  td.ag-actions{white-space:nowrap;width:50px;}
-  td.ag-actions .edit, td.ag-actions .rm{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;
-    border-radius:50%;color:var(--muted);cursor:pointer;font-size:12px;margin-right:2px;}
+  td.ag-actions{white-space:nowrap;width:60px;}
+  td.ag-actions .edit, td.ag-actions .rm{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;
+    border-radius:50%;color:var(--muted);cursor:pointer;font-size:14px;margin-right:2px;}
+  td.ag-actions .edit{color:var(--accent);}
   td.ag-actions .edit:hover{background:var(--chip-bg);color:var(--accent);}
   td.ag-actions .rm:hover{background:var(--danger-bg);color:var(--danger);}
 
@@ -230,6 +231,17 @@
   .panel-box h3{margin:0 0 10px;font-size:12.5px;font-weight:800;color:var(--navy);text-transform:uppercase;letter-spacing:.3px;}
   @media (prefers-color-scheme:dark){ :root:not([data-theme="light"]) .panel-box h3{color:#8fb1e6;} }
   :root[data-theme="dark"] .panel-box h3{color:#8fb1e6;}
+  .panel-box.wide{grid-column:1/-1;}
+  .matriz-wrap{overflow-x:auto;}
+  table.matriz{border-collapse:collapse;font-size:11.5px;width:100%;min-width:560px;}
+  table.matriz th{font-size:10px;font-weight:700;color:var(--ink2);text-transform:uppercase;letter-spacing:.3px;padding:6px 8px;text-align:center;border-bottom:1.5px solid var(--line);vertical-align:bottom;}
+  table.matriz th.prof,table.matriz td.prof{text-align:left;white-space:nowrap;position:sticky;left:0;background:var(--surface);}
+  table.matriz td{padding:5px 8px;text-align:center;border-bottom:1px solid var(--line2);font-variant-numeric:tabular-nums;}
+  table.matriz td.zero{color:var(--muted);opacity:.5;}
+  table.matriz td.cel{font-weight:700;color:var(--ink);}
+  table.matriz td.tot,table.matriz th.tot{border-left:1.5px solid var(--line);font-weight:800;}
+  table.matriz tr.totrow td{border-top:1.5px solid var(--line);border-bottom:none;font-weight:800;}
+  table.matriz .nuc{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:6px;}
   .bar-row{display:flex;align-items:center;gap:8px;margin-bottom:7px;font-size:11.5px;}
   .bar-label{width:118px;flex-shrink:0;color:var(--ink2);text-align:right;overflow:hidden;text-overflow:ellipsis;}
   .bar-track{flex:1;background:var(--line2);border-radius:4px;height:14px;position:relative;overflow:hidden;}
@@ -361,7 +373,7 @@
     </div>
     <div class="field"><label>Atividade(s)</label>
       <div class="ativ-list" id="f_ativ"></div>
-      <div class="ativ-hint">Pode marcar mais de uma — o mesmo profissional às vezes faz mais de uma atividade no mesmo turno.</div>
+      <div class="ativ-hint" id="f_ativ_hint">Pode marcar mais de uma — o mesmo profissional às vezes faz mais de uma atividade no mesmo turno.</div>
     </div>
     <div class="field"><label>Observação (opcional)</label>
       <input id="f_obs" type="text" placeholder="Detalhe curto, se precisar">
@@ -1158,14 +1170,15 @@ async function gerarPdfFiltrado(unidade, profissional, btnEl, onSuccess){
 
 // monta (e anexa ao sandbox) as páginas de PDF da lista de agendamentos já filtrada/ordenada
 function montarPaginasPdfAgendamentos(lista, tituloUnidade, periodoLabel, logosHtml, sandbox){
-  const PAGE_SIZE = 16;
-  const paginas = [];
-  for(let i=0;i<lista.length;i+=PAGE_SIZE) paginas.push(lista.slice(i,i+PAGE_SIZE));
-
+  // Paginação por altura real: vai encaixando uma linha de cada vez e só abre página nova
+  // quando a linha não cabe mais — assim nenhuma linha (mesmo as que quebram em 2-3 linhas
+  // por causa de demanda/nome longos) fica cortada no fim da página.
+  const ALTURA = 794;
   const pageEls = [];
-  paginas.forEach((itens, idx)=>{
-    const contHtml = paginas.length>1 ? ` (página ${idx+1} de ${paginas.length})` : '';
-    const linhas = itens.map(a=>`<tr>
+  let paginaAtual, tbodyAtual;
+
+  function linhaHtml(a){
+    return `<tr>
       <td>${fmtDia(a.data)}</td>
       <td>${a.horario||'—'}</td>
       <td class="pdf-ag-nome">${a.nome}</td>
@@ -1176,23 +1189,48 @@ function montarPaginasPdfAgendamentos(lista, tituloUnidade, periodoLabel, logosH
       <td>${a.unidade}</td>
       <td>${a.acs||'—'}</td>
       <td>${a.profissionalAtendimento||'—'}</td>
-    </tr>`).join('');
+    </tr>`;
+  }
+  function novaPagina(){
     const pageDiv = document.createElement('div');
     pageDiv.className = 'pdf-page';
     pageDiv.innerHTML = `
       <div class="pdf-top">
-        <div><div class="mesano">${periodoLabel}</div><div class="sub">Agendamentos de pacientes — eMulti 5${contHtml}</div></div>
+        <div><div class="mesano">${periodoLabel}</div><div class="sub">Agendamentos de pacientes — eMulti 5</div></div>
         <div class="pdf-logos">${logosHtml}</div>
       </div>
       <div class="pdf-unit" style="font-size:22px;text-align:left;color:#1b4024;text-transform:none;margin-top:10px;">${tituloUnidade}</div>
       <table class="pdf-ag-table">
         <thead><tr><th>Data</th><th>Horário</th><th>Paciente</th><th>Nascimento</th><th>CPF</th><th>Telefone</th><th>Demanda</th><th>Unidade</th><th>ACS</th><th>Atendimento</th></tr></thead>
-        <tbody>${linhas}</tbody>
+        <tbody></tbody>
       </table>
       <div class="pdf-foot">Secretaria Municipal de Saúde de Caruaru - Coordenação de Promoção à Saúde</div>`;
     sandbox.appendChild(pageDiv);
     pageEls.push(pageDiv);
+    paginaAtual = pageDiv;
+    tbodyAtual = pageDiv.querySelector('tbody');
+  }
+
+  novaPagina();
+  lista.forEach(a=>{
+    const wrap = document.createElement('tbody');
+    wrap.innerHTML = linhaHtml(a);
+    const tr = wrap.firstElementChild;
+    tbodyAtual.appendChild(tr);
+    if(paginaAtual.scrollHeight > ALTURA && tbodyAtual.children.length > 1){
+      // não coube: tira dessa página e recomeça numa página nova com essa linha
+      tbodyAtual.removeChild(tr);
+      novaPagina();
+      tbodyAtual.appendChild(tr);
+    }
   });
+
+  if(pageEls.length > 1){
+    pageEls.forEach((p, idx)=>{
+      const sub = p.querySelector('.pdf-top .sub');
+      if(sub) sub.textContent += ` (página ${idx+1} de ${pageEls.length})`;
+    });
+  }
   return pageEls;
 }
 
@@ -1265,13 +1303,14 @@ function renderPainel(){
   const porNucleo = {}; NUCLEOS_LIST.forEach(n=>porNucleo[n]=0);
   const porTerr = {}; TERRITORIOS.forEach(t=>porTerr[t]=0);
   const porAtiv = {};
-  const precResid = {}; NUCLEOS_LIST.forEach(n=>precResid[n]={prec:0,res:0});
+  const matriz = {}; // profissional -> território -> nº de turnos
 
   // "Turnos" contam o turno ocupado, não cada atividade lançada — o mesmo profissional
   // pode fazer mais de uma atividade no mesmo dia/turno, e isso deve valer como 1 turno,
   // não 2. "Atividades mais frequentes" continua contando toda atividade lançada.
   const turnoNucleoVisto = new Set();   // profissional|data|turno
   const turnoTerrVisto = new Set();     // territorio|data|turno|profissional
+  const matrizVisto = new Set();
 
   rows.forEach(r=>{
     const info = r.profissional ? PROF_LOOKUP[r.profissional] : null;
@@ -1288,8 +1327,13 @@ function renderPainel(){
       if(!turnoNucleoVisto.has(chaveNuc)){
         turnoNucleoVisto.add(chaveNuc);
         porNucleo[info.nuc] = (porNucleo[info.nuc]||0)+1;
-        if(info.papel==='Preceptor(a)') precResid[info.nuc].prec++; else precResid[info.nuc].res++;
       }
+    }
+    // turno de um profissional num território (mesmo turno com várias atividades vale 1)
+    if(r.profissional && !matrizVisto.has(chaveTerr)){
+      matrizVisto.add(chaveTerr);
+      matriz[r.profissional] = matriz[r.profissional] || {};
+      matriz[r.profissional][r.territorio] = (matriz[r.profissional][r.territorio]||0)+1;
     }
   });
 
@@ -1303,6 +1347,38 @@ function renderPainel(){
     return `<div class="panel-box"><h3>${title}</h3>${rowsHtml || '<div class="empty-note">Sem dados</div>'}</div>`;
   }
 
+  // Matriz: profissional (linhas) x território (colunas) = quantidade de turnos
+  const profsMat = Object.keys(matriz).sort((x,y)=>x.localeCompare(y,'pt-BR'));
+  const terrsUsados = new Set(profsMat.flatMap(p=>Object.keys(matriz[p])));
+  const terrsMat = [...TERRITORIOS, ...[...terrsUsados].filter(t=>!TERRITORIOS.includes(t))].filter(t=>terrsUsados.has(t));
+  let matrizHtml;
+  if(profsMat.length===0){
+    matrizHtml = `<div class="panel-box wide"><h3>Turnos por profissional em cada território</h3><div class="empty-note">Sem dados</div></div>`;
+  } else {
+    const maxCel = Math.max(...profsMat.flatMap(p=>terrsMat.map(t=>matriz[p][t]||0)), 1);
+    const totCol = {}; terrsMat.forEach(t=>totCol[t]=profsMat.reduce((a,p)=>a+(matriz[p][t]||0),0));
+    const totGeral = terrsMat.reduce((a,t)=>a+totCol[t],0);
+    const linhas = profsMat.map(p=>{
+      const info = PROF_LOOKUP[p] || {nuc:'',papel:''};
+      const cor = NUCLEO_COLOR[info.nuc] || '#999';
+      const totP = terrsMat.reduce((a,t)=>a+(matriz[p][t]||0),0);
+      const cels = terrsMat.map(t=>{
+        const v = matriz[p][t]||0;
+        if(!v) return `<td class="zero">·</td>`;
+        const pct = Math.round(18 + 52*v/maxCel);
+        return `<td class="cel" style="background:color-mix(in srgb, var(--accent) ${pct}%, transparent)">${v}</td>`;
+      }).join('');
+      return `<tr><td class="prof"><span class="nuc" style="background:${cor}"></span>${p}</td>${cels}<td class="tot">${totP}</td></tr>`;
+    }).join('');
+    matrizHtml = `<div class="panel-box wide"><h3>Turnos por profissional em cada território</h3>
+      <div class="matriz-wrap"><table class="matriz">
+        <thead><tr><th class="prof">Profissional</th>${terrsMat.map(t=>`<th>${t}</th>`).join('')}<th class="tot">Total</th></tr></thead>
+        <tbody>${linhas}<tr class="totrow"><td class="prof">Total</td>${terrsMat.map(t=>`<td>${totCol[t]}</td>`).join('')}<td class="tot">${totGeral}</td></tr></tbody>
+      </table></div>
+      <div class="legend-row"><span>Cada número = turnos (manhã ou tarde) do profissional naquele território; várias atividades no mesmo turno contam 1. Registros "Equipe completa" não entram.</span></div>
+    </div>`;
+  }
+
   const html = `
     <div class="kpirow">
       <div class="kpi"><div class="lbl">Registros no filtro</div><div class="val">${rows.length}</div></div>
@@ -1314,16 +1390,7 @@ function renderPainel(){
       ${barBlock('Turnos por núcleo', porNucleo, l=>NUCLEO_COLOR[l]||'#999')}
       ${barBlock('Turnos por território', porTerr, l=>TERR_COLOR[l]||'#999')}
       ${barBlock('Atividades mais frequentes', porAtiv, ()=>'#2a78d6')}
-      <div class="panel-box"><h3>Preceptor × Residente, por núcleo</h3>
-        ${Object.entries(precResid).filter(([,v])=>v.prec+v.res>0).map(([nuc,v])=>{
-          const max = Math.max(v.prec, v.res, 1);
-          return `<div style="margin-bottom:9px;"><div style="font-size:11px;font-weight:700;color:var(--ink2);margin-bottom:3px;">${nuc}</div>
-            <div class="bar-row"><div class="bar-label" style="width:56px;">Prec.</div><div class="bar-track"><div class="bar-fill" style="width:${Math.round(v.prec/max*100)}%;background:#4a3aa7"></div></div><div class="bar-val">${v.prec}</div></div>
-            <div class="bar-row"><div class="bar-label" style="width:56px;">Res.</div><div class="bar-track"><div class="bar-fill" style="width:${Math.round(v.res/max*100)}%;background:#eda100"></div></div><div class="bar-val">${v.res}</div></div>
-          </div>`;
-        }).join('') || '<div class="empty-note">Sem dados</div>'}
-        <div class="legend-row"><span><i style="background:#4a3aa7"></i>Preceptor(a)</span><span><i style="background:#eda100"></i>Residente</span></div>
-      </div>
+      ${matrizHtml}
     </div>`;
   target.innerHTML = html;
 }
@@ -1389,7 +1456,11 @@ const fTerr = document.getElementById('f_terr'), fProf = document.getElementById
 
 // ---------- modo gestor ----------
 const GESTOR_PIN = '96567936';
-let isGestor = (localStorage.getItem('agendaEmultiGestor') === '1');
+// Login/senha DESATIVADO por enquanto: com `false`, todo mundo que abre o app já age como
+// gestor (vê a lista de agendamentos, edita e remove) e o botão "Entrar como gestor" some.
+// No futuro (login por profissional), é só trocar para `true` para religar a tela de PIN/login.
+const EXIGIR_LOGIN_GESTOR = false;
+let isGestor = !EXIGIR_LOGIN_GESTOR || (localStorage.getItem('agendaEmultiGestor') === '1');
 let editingId = null;
 const gestorBtn = document.getElementById('gestorBtn');
 function gestorNomeSalvo(){
@@ -1402,14 +1473,15 @@ function updateGestorUI(){
   gestorBtn.innerHTML = gestorIconSvg + (isGestor ? (nome ? 'Gestor: ' + escHtml(nome) : 'Gestor ativo') : 'Entrar como gestor');
   gestorBtn.classList.toggle('on', isGestor);
   document.body.classList.toggle('gestor-on', isGestor);
+  gestorBtn.style.display = EXIGIR_LOGIN_GESTOR ? '' : 'none';
 }
 let migracaoTerritoriosFeita = false;
 async function migrarTerritoriosAntigos(){
   if(migracaoTerritoriosFeita || !dbRef) return;
-  migracaoTerritoriosFeita = true;
   const regsAntigos = ROWS.filter(r => TERRITORIOS_ANTIGOS[r.territorio]);
   const agsAntigos = AGENDAMENTOS.filter(a => TERRITORIOS_ANTIGOS[a.unidade]);
   if(regsAntigos.length===0 && agsAntigos.length===0) return;
+  migracaoTerritoriosFeita = true;
   try{
     await Promise.all([
       ...regsAntigos.map(r => dbRef.collection('registros').doc(r.id).update({territorio: TERRITORIOS_ANTIGOS[r.territorio]})),
@@ -1441,6 +1513,10 @@ updateGestorUI();
 function setModalMode(){
   document.getElementById('modalTitle').textContent = editingId ? 'Editar registro' : 'Novo registro';
   document.getElementById('modalSave').textContent = editingId ? 'Salvar alterações' : 'Salvar registro';
+  const h = document.getElementById('f_ativ_hint');
+  if(h) h.textContent = editingId
+    ? 'Editando este registro: escolha só uma atividade. A alteração substitui o registro (não cria outro).'
+    : 'Pode marcar mais de uma — o mesmo profissional às vezes faz mais de uma atividade no mesmo turno.';
 }
 TERRITORIOS.forEach(t=>{ const o=document.createElement('option'); o.value=t; o.textContent=t; fTerr.appendChild(o); });
 PROFISSIONAIS.forEach(([nome])=>{ const o=document.createElement('option'); o.value=nome; o.textContent=nome; fProf.appendChild(o); });
@@ -1455,6 +1531,14 @@ ATIVIDADES.forEach(a=>{
   const cb = document.createElement('input'); cb.type='checkbox'; cb.value=a;
   label.appendChild(cb); label.appendChild(document.createTextNode(a));
   fAtiv.appendChild(label);
+  // ao editar um registro existente só vale uma atividade (evita criar registros extras)
+  cb.addEventListener('change', () => {
+    if(editingId && cb.checked){
+      fAtiv.querySelectorAll('input[type="checkbox"]').forEach(o=>{
+        if(o!==cb && o.checked){ o.checked=false; o.dispatchEvent(new Event('change')); }
+      });
+    }
+  });
   if(a === 'Outra (especificar)'){
     const txt = document.createElement('input');
     txt.type = 'text';
@@ -1617,7 +1701,8 @@ document.getElementById('modalAgSave').onclick = async () => {
   const payload = { data, horario, nome, nascimento, cpf, telefone, demanda, unidade, acs, profissional, profissionalAtendimento, criadoEm: new Date().toISOString() };
   try{
     if(editingAgId){
-      await dbRef.doc('agendamentos/'+editingAgId).set(payload);
+      const { criadoEm: _naoMexe, ...campos } = payload; // mantém a data de criação original
+      await dbRef.doc('agendamentos/'+editingAgId).update(campos);
       showToast('Agendamento atualizado.');
     } else {
       await dbRef.collection('agendamentos').add(payload);
@@ -1654,17 +1739,12 @@ document.getElementById('modalSave').onclick = async () => {
   saveBtn.disabled = true; saveBtn.textContent = 'Salvando…';
   try{
     if(editingId){
-      const [primeira, ...resto] = ativs;
-      await dbRef.doc('registros/'+editingId).set({
-        data, turno, territorio: terr, profissional: prof, atividade: primeira, obs,
-        criadoEm: new Date().toISOString()
+      // Edição atualiza SOMENTE o documento existente (nunca cria outro). Nesse modo só dá
+      // para marcar uma atividade; para acrescentar outra, usa-se "+ Novo registro".
+      if(ativs.length>1){ showToast('Ao editar, marque só uma atividade. Para outra atividade, use "+ Novo registro".'); saveBtn.disabled=false; saveBtn.textContent='Salvar alterações'; return; }
+      await dbRef.doc('registros/'+editingId).update({
+        data, turno, territorio: terr, profissional: prof, atividade: ativs[0], obs
       });
-      if(resto.length){
-        await Promise.all(resto.map(ativ => dbRef.collection('registros').add({
-          data, turno, territorio: terr, profissional: prof, atividade: ativ, obs,
-          criadoEm: new Date().toISOString()
-        })));
-      }
       modalBg.classList.remove('open');
       state.ym = ymOf(data); state.week = mondayOf(data);
       editingId = null;
@@ -1749,6 +1829,7 @@ async function init(){
       dbReady = true;
       setStatus(true, snap.metadata.fromCache ? 'sincronizando…' : 'ao vivo, com a equipe');
       render();
+      if(isGestor) migrarTerritoriosAntigos();
     },
     (err) => {
       setStatus(false, 'erro de conexão');
@@ -1761,6 +1842,7 @@ async function init(){
       AGENDAMENTOS = snap.docs.map(d => ({ id: d.id, ...d.data() })).filter(a => a.data && a.nome && a.demanda && a.unidade);
       agendamentosError = null;
       render();
+      if(isGestor) migrarTerritoriosAntigos();
     },
     (err) => {
       agendamentosError = err.code || 'erro';
@@ -1862,6 +1944,5 @@ init();
   };
 })();
 </script>
-
 </body>
 </html>
