@@ -482,6 +482,12 @@
 <script>
 // ---------- referência fixa da equipe (núcleo, papel, cores) ----------
 const TERRITORIOS = ["Peladas","Nina Liberato","LBT I e II","Taquara","Alto do Moura","Cajá","Kennedy I","Caiucá I","Caiucá II","Geral / ASCES / Outros"];
+// Walter e Yuri convivem por enquanto (Walter sai da lista depois). Lançamentos de Walter
+// a partir de 01/11/2026 são passados para Yuri; os anteriores continuam no nome do Walter.
+const TROCA_PROFISSIONAL = {de:"Walter Morais Neto", para:"Yuri Andrey Ferreira Do Carmo", aPartirDe:"2026-11-01"};
+function nomeProfissionalAtual(nome, dataISO){
+  return (nome===TROCA_PROFISSIONAL.de && dataISO && dataISO>=TROCA_PROFISSIONAL.aPartirDe) ? TROCA_PROFISSIONAL.para : nome;
+}
 const TERRITORIOS_ANTIGOS = {"LBT I":"LBT I e II","LBT II":"LBT I e II"}; // unidades antigas -> unificada (LBT I e II ocupam o mesmo prédio)
 const TERR_TINT = ["F3D7D7","F3E6D7","F0F3D7","E1F3D7","D7F3DC","D7F3EB","D7EBF3","D7DCF3","E1D7F3","F0D7F3","F3D7E6"];
 const TERR_COLOR = {}; TERRITORIOS.forEach((t,i)=> TERR_COLOR[t] = '#'+TERR_TINT[i % TERR_TINT.length]);
@@ -503,9 +509,10 @@ const PROFISSIONAIS = [
   ["Riedja Mittiey de Oliveira Ramalho","Fisioterapia","Preceptor(a)"],
   ["Yanne Caroliny","Nutrição","Preceptor(a)"],
   ["Walter Morais Neto","Educação Física","Preceptor(a)"],
+  ["Yuri Andrey Ferreira Do Carmo","Educação Física","Preceptor(a)"],
 ];
 const NUCLEO_COLOR = {"Fisioterapia":"#2a78d6","Psicologia":"#eb6834","Serviço Social":"#1baf7a","Nutrição":"#eda100","Sanitarista":"#e87ba4","Biomedicina":"#008300","Educação Física":"#4a3aa7","Farmácia":"#e34948"};
-const NUCLEO_TITULO = {"Fisioterapia":"Fisioterapeuta","Psicologia":"Psicólogo(a)","Serviço Social":"Assistente Social","Nutrição":"Nutricionista","Sanitarista":"Sanitarista","Biomedicina":"Biomédico(a)","Educação Física":"Educador(a) Físico(a)","Farmácia":"Farmacêutico(a)"};
+const NUCLEO_TITULO = {"Fisioterapia":"Fisioterapeuta","Psicologia":"Psicólogo(a)","Serviço Social":"Assistente Social","Nutrição":"Nutricionista","Sanitarista":"Sanitarista","Biomedicina":"Biomédico(a)","Educação Física":"Profissional de Educação Física","Farmácia":"Farmacêutico(a)"};
 const ATIVIDADES = ["Atendimento individual","Atendimento compartilhado","Visita domiciliar","Grupo de atividade física","Grupo de autocuidado","PICS","Reuniões","Educação permanente","PSE","Matriciamento","Curso / capacitação","Atividade institucional","Planejamento familiar","Tutoria","Reunião Geral eMulti","Reunião com a Estratégia de Saúde da Família","Feriado","Facultativo ponto","Folga","Atestado médico","Outra (especificar)"];
 
 const PROF_LOOKUP = {};
@@ -1484,18 +1491,26 @@ function updateGestorUI(){
 let migracaoTerritoriosFeita = false;
 async function migrarTerritoriosAntigos(){
   if(migracaoTerritoriosFeita || !dbRef) return;
-  const regsAntigos = ROWS.filter(r => TERRITORIOS_ANTIGOS[r.territorio]);
-  const agsAntigos = AGENDAMENTOS.filter(a => TERRITORIOS_ANTIGOS[a.unidade]);
-  if(regsAntigos.length===0 && agsAntigos.length===0) return;
+  // monta, para cada documento, só os campos que precisam ser atualizados
+  const ops = [];
+  ROWS.forEach(r=>{
+    const u = {};
+    if(TERRITORIOS_ANTIGOS[r.territorio]) u.territorio = TERRITORIOS_ANTIGOS[r.territorio];
+    { const novo = nomeProfissionalAtual(r.profissional, r.data); if(novo!==r.profissional) u.profissional = novo; }
+    if(Object.keys(u).length) ops.push(dbRef.collection('registros').doc(r.id).update(u));
+  });
+  AGENDAMENTOS.forEach(a=>{
+    const u = {};
+    if(TERRITORIOS_ANTIGOS[a.unidade]) u.unidade = TERRITORIOS_ANTIGOS[a.unidade];
+    if(Object.keys(u).length) ops.push(dbRef.collection('agendamentos').doc(a.id).update(u));
+  });
+  if(ops.length===0) return;
   migracaoTerritoriosFeita = true;
   try{
-    await Promise.all([
-      ...regsAntigos.map(r => dbRef.collection('registros').doc(r.id).update({territorio: TERRITORIOS_ANTIGOS[r.territorio]})),
-      ...agsAntigos.map(a => dbRef.collection('agendamentos').doc(a.id).update({unidade: TERRITORIOS_ANTIGOS[a.unidade]}))
-    ]);
-    showToast(`${regsAntigos.length + agsAntigos.length} registro(s) de LBT I/LBT II foram unificados em "LBT I e II".`);
+    await Promise.all(ops);
+    showToast(`${ops.length} registro(s) antigos foram atualizados (LBT I e II / Walter para Yuri a partir de novembro).`);
   }catch(e){
-    migracaoTerritoriosFeita = false; // permite tentar de novo na próxima vez que entrar como gestor
+    migracaoTerritoriosFeita = false; // tenta de novo no próximo carregamento
   }
 }
 function setGestor(v){
