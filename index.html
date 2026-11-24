@@ -81,6 +81,13 @@
   .cal-day-aviso.facultativo{background:rgba(138,92,214,.12);border-color:#a98bd8;}
   .hist-item.dia-marcado{border-left-color:#7a4fc7;}
   .hist-item.dia-desmarcado{border-left-color:var(--muted);}
+  .hist-item.dia-apagado{border-left-color:var(--danger);}
+  .hist-item.dia-apagado .hist-badge{background:var(--danger);}
+  .grp-acoes{display:flex;gap:10px;margin-top:3px;font-size:10.5px;}
+  .grp-acoes button{background:none;border:none;padding:1px 0;cursor:pointer;font-size:10.5px;font-weight:700;text-decoration:underline;color:var(--navy);}
+  .grp-acoes button.grp-rm{color:#b3261e;}
+  .btn-apagar-dia{margin-right:auto;background:none;border:none;color:#b3261e;font-size:11.5px;font-weight:700;cursor:pointer;text-decoration:underline;padding:8px 2px;}
+  .btn-apagar-dia:hover{color:#8f1d17;}
   .hist-item.dia-marcado .hist-badge{background:#7a4fc7;}
   .just-resumo{background:var(--surface2);border:1px solid var(--line);border-radius:8px;padding:9px 11px;font-size:12px;color:var(--ink2);margin-bottom:12px;line-height:1.5;}
   .just-resumo b{color:var(--ink);}
@@ -568,10 +575,29 @@
     <div class="field" id="justCampo"><label>Justificativa (obrigatória)</label>
       <textarea id="just_texto" rows="3" placeholder="Explique em poucas palavras o motivo da alteração"></textarea>
     </div>
+    <div class="field" id="justSenhaCampo" style="display:none;"><label>Senha de gestor</label>
+      <input id="just_senha" type="password" autocomplete="off" placeholder="Digite a senha para confirmar">
+    </div>
     <p class="gestor-modal-err" id="justErr" style="display:none;"></p>
     <div class="modal-actions">
       <button class="btn-secondary" id="justCancel" type="button">Cancelar</button>
       <button class="btn-primary" id="justOk" type="button">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="modalGrupoBg">
+  <div class="modal">
+    <h2>Editar todas as atividades</h2>
+    <div class="sub" id="grp_resumo"></div>
+    <div class="field"><label>Data</label><input id="grp_data" type="date"></div>
+    <div class="field"><label>Turno</label><select id="grp_turno"><option>Manhã</option><option>Tarde</option></select></div>
+    <div class="field"><label>Território</label><select id="grp_terr"></select></div>
+    <div class="field"><label>Profissional</label><select id="grp_prof"></select></div>
+    <p class="gestor-modal-err" id="grpErr" style="display:none;"></p>
+    <div class="modal-actions">
+      <button class="btn-secondary" id="grpCancel" type="button">Cancelar</button>
+      <button class="btn-primary" id="grpOk" type="button">Continuar</button>
     </div>
   </div>
 </div>
@@ -926,9 +952,10 @@ function renderAgenda(){
             const vg = (r.vagas!=null && r.vagas!=='') ? `<span class="vagas-badge" title="Vagas para agendamento de pacientes">${r.vagas} vaga${Number(r.vagas)===1?'':'s'}</span>` : '';
             return `<span class="ativ-chip"${title}>${ativ}${vg}<span class="edit" data-id="${r.id}" title="Editar">✎</span><span class="rm" data-id="${r.id}" title="Remover">✕</span></span>`;
           }).join('');
+          const ativChipsFull = ativChips + grupoAcoesHtml(entries.map(e=>e.r));
           const _fer = infoDia(dataISO);
           const _ferTag = _fer ? `<span class="fer-mini ${_fer.tipo}" title="${escHtml(_fer.nome||'')}">${_fer.tipo==='facultativo'?'Facult.':'Feriado'}</span>` : '';
-          bodyRows += `<tr><td class="dia">${fmtDia(dataISO)}${_ferTag}</td><td class="turno">${turno}</td><td>${profHtml}</td><td>${ativChips}</td></tr>`;
+          bodyRows += `<tr><td class="dia">${fmtDia(dataISO)}${_ferTag}</td><td class="turno">${turno}</td><td>${profHtml}</td><td>${ativChipsFull}</td></tr>`;
         });
       });
     });
@@ -947,6 +974,7 @@ function renderAgenda(){
   target.querySelectorAll('.edit').forEach(el=>{
     el.addEventListener('click', (e)=>{ e.stopPropagation(); editRegistro(el.dataset.id); });
   });
+  ligarAcoesGrupo(target);
   target.querySelectorAll('.pdfbtn').forEach(el=>{
     el.addEventListener('click', (e)=>{ e.stopPropagation(); gerarPdfTerritorio(el.dataset.pdfterr, el); });
   });
@@ -1054,6 +1082,7 @@ function renderAgendaCalendario(){
         <h2 id="calDayTitle">Dia</h2>
         <div id="calDayBody"></div>
         <div class="modal-actions">
+          <button class="btn-apagar-dia" id="calDayApagar" type="button" style="display:none;">Apagar todas as atividades do dia</button>
           <button class="btn-secondary" id="calDayClose" type="button">Fechar</button>
           <button class="btn-primary" id="calDayAdd" type="button">+ Novo registro nesse dia</button>
         </div>
@@ -1129,7 +1158,7 @@ function openCalDay(iso){
             const title = r.obs ? ` title="${r.obs.replace(/"/g,'&quot;')}"` : '';
             const vg = (r.vagas!=null && r.vagas!=='') ? `<span class="vagas-badge" title="Vagas para agendamento de pacientes">${r.vagas} vaga${Number(r.vagas)===1?'':'s'}</span>` : '';
             return `<span class="ativ-chip"${title}>${r.atividade}${vg}<span class="edit" data-id="${r.id}" title="Editar">✎</span><span class="rm" data-id="${r.id}" title="Remover">✕</span></span>`;
-          }).join('');
+          }).join('') + grupoAcoesHtml(entries);
           html += `<tr><td class="turno">${turno}</td><td>${profHtml}</td><td>${ativChips}</td></tr>`;
         });
       });
@@ -1142,7 +1171,12 @@ function openCalDay(iso){
     body.querySelectorAll('.edit').forEach(el=>{
       el.addEventListener('click', ()=>{ editRegistro(el.dataset.id); });
     });
+    ligarAcoesGrupo(body, iso);
   }
+  const apagarBtn = document.getElementById('calDayApagar');
+  const registrosDoDia = ROWS.filter(r=>r.data===iso);
+  apagarBtn.style.display = registrosDoDia.length ? '' : 'none';
+  apagarBtn.onclick = () => apagarDia(iso);
   const addDia = document.getElementById('calDayAdd');
   addDia.style.display = infoDia_ ? 'none' : '';
   addDia.onclick = () => {
@@ -1714,7 +1748,18 @@ const fTerr = document.getElementById('f_terr'), fProf = document.getElementById
       fAtiv = document.getElementById('f_ativ'), fData = document.getElementById('f_data');
 
 // ---------- modo gestor ----------
-const GESTOR_PIN = '96567936';
+// Senha de gestor guardada só como hash (PBKDF2), nunca em texto puro.
+const SENHA_SALT = '9d4636063ca7d435', SENHA_HASH = '05933d113404fa8130fb3301361819dd75a5cf2950b55d30af8fae52eb6c1b98', SENHA_ITER = 150000;
+async function hashSenha(txt){
+  if(!(window.crypto && crypto.subtle)) throw new Error('sem-crypto');
+  const enc = new TextEncoder();
+  const key = await crypto.subtle.importKey('raw', enc.encode(txt), 'PBKDF2', false, ['deriveBits']);
+  const bits = await crypto.subtle.deriveBits({ name:'PBKDF2', salt:enc.encode(SENHA_SALT), iterations:SENHA_ITER, hash:'SHA-256' }, key, 256);
+  return [...new Uint8Array(bits)].map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+async function senhaConfere(txt){
+  try{ return (await hashSenha(String(txt).trim())) === SENHA_HASH; }catch(e){ return false; }
+}
 // Login/senha DESATIVADO por enquanto: com `false`, todo mundo que abre o app já age como
 // gestor (vê a lista de agendamentos, edita e remove) e o botão "Entrar como gestor" some.
 // No futuro (login por profissional), é só trocar para `true` para religar a tela de PIN/login.
@@ -1772,8 +1817,7 @@ gestorBtn.onclick = () => {
   } else {
     const pin = prompt('Digite o PIN de gestor:');
     if(pin === null) return;
-    if(pin.trim() === GESTOR_PIN){ setGestor(true); showToast('Modo gestor ativado.'); }
-    else showToast('PIN incorreto.');
+    senhaConfere(pin).then(ok => { if(ok){ setGestor(true); showToast('Modo gestor ativado.'); } else showToast('PIN incorreto.'); });
   }
 };
 updateGestorUI();
@@ -2140,7 +2184,8 @@ document.getElementById('modalSave').onclick = async () => {
         throw errUp;
       }
       modalBg.classList.remove('open');
-      state.ym = ymOf(data); state.week = mondayOf(data);
+      // só muda o mês/semana da tela se a data foi alterada; senão a pessoa continua onde estava
+      if(antesEdicao && antesEdicao.data !== data){ state.ym = ymOf(data); state.week = mondayOf(data); }
       editingId = null;
       setModalMode();
       document.getElementById('f_obs').value = '';
@@ -2277,6 +2322,130 @@ document.getElementById('diaOk').onclick = async () => {
     showToast('Não foi possível marcar o dia agora. Confira se as regras do banco incluem "diasEspeciais".');
   }
 };
+// ---------- ações em grupo: todas as atividades de um profissional no mesmo dia/turno/território ----------
+function grupoAcoesHtml(regs){
+  if(!regs || regs.length < 2) return '';
+  const ids = regs.map(r=>r.id).join(',');
+  return '<div class="grp-acoes"><button type="button" class="grp-edit" data-ids="'+ids+'" title="Mudar data, turno, território ou profissional de todas essas atividades de uma vez">Editar todas ('+regs.length+')</button>' +
+         '<button type="button" class="grp-rm" data-ids="'+ids+'" title="Remover todas essas atividades de uma vez">Remover todas ('+regs.length+')</button></div>';
+}
+function ligarAcoesGrupo(raiz, isoDia){
+  raiz.querySelectorAll('.grp-edit').forEach(el=>{
+    el.addEventListener('click', (e)=>{ e.stopPropagation(); grupoEditar(el.dataset.ids.split(',')); });
+  });
+  raiz.querySelectorAll('.grp-rm').forEach(el=>{
+    el.addEventListener('click', async (e)=>{ e.stopPropagation(); await grupoRemover(el.dataset.ids.split(',')); if(isoDia) openCalDay(isoDia); });
+  });
+}
+async function grupoRemover(ids){
+  if(!dbRef) return;
+  const lista = ids.map(id=>ROWS.find(r=>r.id===id)).filter(Boolean);
+  if(!lista.length) return;
+  const ref = lista[0];
+  const res = await pedirJustificativa('Remover todas as atividades',
+    '<b>' + escHtml(fmtDataSimples(ref.data).slice(0,5) + ' ' + (ref.turno||'') + ' · ' + (ref.territorio||'') + ' · ' + (ref.profissional || 'Equipe completa')) + '</b><br>' +
+    lista.map(r=>escHtml(r.atividade||'')).join('<br>'), { textoOk:'Remover todas' });
+  if(!res) return;
+  const originais = lista.map(r => { const { id, ...resto } = r; return { id, resto }; });
+  const hist = [];
+  for(const r of lista){
+    hist.push(await registrarHistorico({ tipo:'remocao', registroId:r.id, antes:snapshotRegistro(r), autor:res.autor, justificativa:res.justificativa }));
+  }
+  try{
+    await Promise.all(lista.map(r => dbRef.doc('registros/'+r.id).delete()));
+  }catch(e){
+    for(const h of hist) await desfazerHistorico(h);
+    showToast('Não foi possível remover tudo agora. Confira e tente de novo.');
+    return;
+  }
+  showToast(lista.length + ' atividades removidas.', async () => {
+    await Promise.all(originais.map(o => dbRef.collection('registros').doc(o.id).set(o.resto)));
+    for(const r of lista) await registrarHistorico({ tipo:'restauracao', registroId:r.id, antes:snapshotRegistro(r), autor:res.autor, justificativa:'Remoção em grupo desfeita logo em seguida.' });
+  }, null, 10000);
+}
+let grupoIds = [];
+function grupoEditar(ids){
+  const lista = ids.map(id=>ROWS.find(r=>r.id===id)).filter(Boolean);
+  if(!lista.length) return;
+  grupoIds = lista.map(r=>r.id);
+  const ref = lista[0];
+  document.getElementById('grp_resumo').innerHTML = 'Vale para as <b>' + lista.length + ' atividades</b> de ' + escHtml(ref.profissional || 'Equipe completa') + ' neste turno (' + lista.map(r=>escHtml(r.atividade||'')).join(', ') + '). As atividades continuam as mesmas; muda só o que você alterar abaixo.';
+  document.getElementById('grp_data').value = ref.data;
+  document.getElementById('grp_turno').value = ref.turno;
+  const gt = document.getElementById('grp_terr');
+  gt.innerHTML = TERRITORIOS.map(t=>'<option>'+escHtml(t)+'</option>').join('');
+  gt.value = ref.territorio;
+  const gp = document.getElementById('grp_prof');
+  gp.innerHTML = [...fProf.options].filter(o=>o.value!=='__vazio__').map(o=>'<option value="'+escHtml(o.value)+'">'+escHtml(o.textContent)+'</option>').join('');
+  if(ref.profissional && ![...gp.options].some(o=>o.value===ref.profissional)){ const o=document.createElement('option'); o.value=ref.profissional; o.textContent=ref.profissional; gp.appendChild(o); }
+  gp.value = ref.profissional || '';
+  document.getElementById('grpErr').style.display = 'none';
+  document.getElementById('modalGrupoBg').classList.add('open');
+}
+document.getElementById('grpCancel').onclick = () => document.getElementById('modalGrupoBg').classList.remove('open');
+document.getElementById('grpOk').onclick = async () => {
+  const err = document.getElementById('grpErr');
+  const lista = grupoIds.map(id=>ROWS.find(r=>r.id===id)).filter(Boolean);
+  if(!lista.length){ document.getElementById('modalGrupoBg').classList.remove('open'); return; }
+  const novo = { data:document.getElementById('grp_data').value, turno:document.getElementById('grp_turno').value,
+                 territorio:document.getElementById('grp_terr').value, profissional:document.getElementById('grp_prof').value };
+  let msg = '';
+  if(!novo.data) msg = 'Escolha a data.';
+  else if(novo.data !== lista[0].data && dataBloqueada(novo.data)){ const b = dataBloqueada(novo.data); msg = rotuloTipoDia(b) + (b.nome ? ' (' + b.nome + ')' : '') + ': não dá para lançar atividade nesse dia.'; }
+  else if(!novo.profissional){ const ruins = ativsSemDono(lista.map(r=>r.atividade)); if(ruins.length) msg = 'Equipe completa só vale para atividades coletivas. Para "' + ruins.join('", "') + '", escolha o profissional.'; }
+  const plano = lista.map(r => ({ r, mud: mudancasEntre(r, Object.assign({}, r, novo)) })).filter(x=>x.mud.length);
+  if(!msg && !plano.length){ document.getElementById('modalGrupoBg').classList.remove('open'); showToast('Nenhuma alteração para salvar.'); return; }
+  if(msg){ err.textContent = msg; err.style.display = 'block'; return; }
+  const resumoMud = plano[0].mud.map(m => '<br>' + escHtml(m.campo) + ': <s>' + escHtml(m.de) + '</s> → <b>' + escHtml(m.para) + '</b>').join('');
+  const res = await pedirJustificativa('Justificar alteração em grupo',
+    '<b>' + plano.length + ' atividade' + (plano.length===1?'':'s') + '</b> de ' + escHtml(lista[0].profissional || 'Equipe completa') + resumoMud);
+  if(!res) return;
+  document.getElementById('modalGrupoBg').classList.remove('open');
+  const hist = [];
+  try{
+    for(const x of plano){
+      hist.push(await registrarHistorico({ tipo:'edicao', registroId:x.r.id, antes:snapshotRegistro(x.r), mudancas:x.mud, autor:res.autor, justificativa:res.justificativa }));
+    }
+    await Promise.all(plano.map(x => dbRef.doc('registros/'+x.r.id).update(novo)));
+    if(novo.data !== lista[0].data){ state.ym = ymOf(novo.data); state.week = mondayOf(novo.data); }
+    render();
+    showToast(plano.length + ' atividades atualizadas.' + (hist.every(Boolean) ? '' : ' Atenção: parte do histórico não pôde ser gravada.'));
+  }catch(e){
+    for(const h of hist) await desfazerHistorico(h);
+    showToast('Não foi possível salvar tudo agora. Tente de novo.');
+  }
+};
+async function apagarDia(iso){
+  if(!dbRef) return;
+  const lista = ROWS.filter(r=>r.data===iso);
+  if(!lista.length) return;
+  const porTerr = {};
+  lista.forEach(r => { porTerr[r.territorio] = (porTerr[r.territorio]||0) + 1; });
+  const resumoTerr = Object.keys(porTerr).sort().map(t => escHtml(t) + ': ' + porTerr[t]).join(' · ');
+  const res = await pedirJustificativa('Apagar todas as atividades do dia',
+    'Você vai apagar <b>' + lista.length + ' atividade' + (lista.length===1?'':'s') + '</b> de <b>' + escHtml(fmtDataExtensa(iso)) + '</b>, de todos os territórios e profissionais (inclusive as que a busca esteja escondendo).<br>' + resumoTerr +
+    '<br><span style="color:#b3261e">Depois de confirmar, só dá para desfazer pelo aviso que aparece logo em seguida.</span>',
+    { senha:true, textoOk:'Apagar o dia' });
+  if(!res) return;
+  const snaps = lista.map(r => ({ id:r.id, ...snapshotRegistro(r), criadoEm:r.criadoEm||'' }));
+  const originais = lista.map(r => { const { id, ...resto } = r; return { id, resto }; });
+  const histId = await registrarHistorico({ tipo:'dia-apagado', registroId:iso, antes:{ data:iso, total:lista.length },
+    mudancas: Object.keys(porTerr).sort().map(t => ({ campo:t, de:porTerr[t] + ' atividade(s)', para:'apagadas' })),
+    autor:res.autor, justificativa:res.justificativa, removidos:snaps });
+  try{
+    await Promise.all(lista.map(r => dbRef.doc('registros/'+r.id).delete()));
+  }catch(e){
+    await desfazerHistorico(histId);
+    showToast('Não foi possível apagar tudo agora. Confira o dia e tente de novo.');
+    return;
+  }
+  showToast(lista.length + ' atividade' + (lista.length===1?'':'s') + ' apagada' + (lista.length===1?'':'s') + ' do dia ' + escHtml(fmtDataSimples(iso).slice(0,5)) + '.' + (histId ? '' : ' Atenção: o histórico não pôde ser gravado.'),
+    async () => {
+      await Promise.all(originais.map(o => dbRef.collection('registros').doc(o.id).set(o.resto)));
+      await registrarHistorico({ tipo:'restauracao', registroId:iso, antes:{ data:iso, total:lista.length }, autor:res.autor, justificativa:'Remoção do dia desfeita logo em seguida.' });
+    }, null, 15000);
+  openCalDay(iso);
+}
 async function desmarcarDia(iso){
   const man = DIAS[iso]; if(!man) return;
   const rotulo = (man.tipo==='facultativo' ? 'Ponto facultativo' : 'Feriado') + ': ' + (man.nome || '');
@@ -2339,6 +2508,9 @@ function pedirJustificativa(titulo, resumoHtml, opts){
   opts = opts || {};
   return new Promise(resolve=>{
     document.getElementById('justCampo').style.display = opts.semJustificativa ? 'none' : '';
+    document.getElementById('justSenhaCampo').style.display = opts.senha ? '' : 'none';
+    document.getElementById('just_senha').value = '';
+    document.getElementById('justOk').textContent = opts.textoOk || 'Confirmar';
     document.getElementById('justTitulo').textContent = titulo;
     document.getElementById('justResumo').innerHTML = resumoHtml;
     justErr.style.display = 'none';
@@ -2356,13 +2528,23 @@ function pedirJustificativa(titulo, resumoHtml, opts){
       ok.onclick = null; cancel.onclick = null; justBg.onkeydown = null;
       resolve(res);
     }
-    ok.onclick = () => {
+    ok.onclick = async () => {
       const sel = justAutorSel.value;
       const autor = sel==='__outro__' ? justAutorOutro.value.trim() : sel;
       const texto = justTexto.value.trim();
       let erro = '';
       if(!autor) erro = 'Informe quem está fazendo a alteração.';
       else if(!opts.semJustificativa && texto.length < 5) erro = 'Escreva a justificativa (pelo menos algumas palavras).';
+      if(!erro && opts.senha){
+        const sv = document.getElementById('just_senha').value;
+        if(!sv) erro = 'Digite a senha de gestor.';
+        else {
+          ok.disabled = true; ok.textContent = 'Verificando…';
+          const certa = await senhaConfere(sv);
+          ok.disabled = false; ok.textContent = opts.textoOk || 'Confirmar';
+          if(!certa) erro = 'Senha incorreta.';
+        }
+      }
       if(erro){ justErr.textContent = erro; justErr.style.display = 'block'; return; }
       lsSet(LS_AUTOR, JSON.stringify({ sel, outro: sel==='__outro__' ? autor : '' }));
       fechar({ autor, justificativa: texto });
@@ -2380,7 +2562,8 @@ async function registrarHistorico(e){
     minhasEntradasHist.add(ref.id);
     await ref.set({
       tipo: e.tipo, registroId: e.registroId || '', antes: e.antes || {}, mudancas: e.mudancas || [],
-      autor: e.autor || '', justificativa: e.justificativa || '', criadoEm: new Date().toISOString()
+      autor: e.autor || '', justificativa: e.justificativa || '', criadoEm: new Date().toISOString(),
+      ...(e.removidos ? { removidos: e.removidos } : {})
     });
     return ref.id;
   }catch(err){
@@ -2418,7 +2601,7 @@ function atualizarContadorHistorico(){
 }
 document.getElementById('bellBtn').addEventListener('click', ()=>{ state.tab = 'historico'; render(); window.scrollTo({top:0, behavior:'smooth'}); });
 
-const TIPO_HIST = { edicao:'Edição', remocao:'Remoção', restauracao:'Restauração', 'dia-marcado':'Dia marcado', 'dia-desmarcado':'Marcação removida' };
+const TIPO_HIST = { edicao:'Edição', remocao:'Remoção', restauracao:'Restauração', 'dia-marcado':'Dia marcado', 'dia-desmarcado':'Marcação removida', 'dia-apagado':'Dia apagado' };
 function renderHistorico(){
   const el = document.getElementById('tab-historico');
   if(historicoError){
@@ -2443,7 +2626,8 @@ function renderHistorico(){
     const tipo = TIPO_HIST[h.tipo] ? h.tipo : 'edicao';
     html += '<div class="hist-item '+tipo+'"><div class="hist-top"><span class="hist-badge">'+TIPO_HIST[tipo]+'</span>'
       + '<span>por <b>'+escHtml(h.autor||'(sem nome)')+'</b></span><span class="hist-quando">'+escHtml(fmtQuando(h.criadoEm))+'</span></div>';
-    if(tipo.indexOf('dia-')===0) html += '<div class="hist-reg">'+escHtml(fmtDataSimples(a.data))+' · '+escHtml((a.tipoDia==='facultativo'?'Ponto facultativo':'Feriado')+(a.nome?': '+a.nome:''))+'</div>';
+    if(tipo==='dia-apagado' || (tipo==='restauracao' && !a.turno)) html += '<div class="hist-reg">'+escHtml(fmtDataSimples(a.data))+(a.total ? ' · '+a.total+' atividade'+(a.total===1?'':'s') : '')+'</div>';
+    else if(tipo.indexOf('dia-')===0) html += '<div class="hist-reg">'+escHtml(fmtDataSimples(a.data))+' · '+escHtml((a.tipoDia==='facultativo'?'Ponto facultativo':'Feriado')+(a.nome?': '+a.nome:''))+'</div>';
     else if(a.data) html += '<div class="hist-reg">'+escHtml(rotuloRegistro(a))+'</div>';
     if((tipo==='edicao' || tipo.indexOf('dia-')===0) && (h.mudancas||[]).length){
       html += '<div class="hist-mud">' + h.mudancas.map(m => '<div><b>'+escHtml(m.campo)+':</b> <span class="de">'+escHtml(m.de)+'</span> → '+escHtml(m.para)+'</div>').join('') + '</div>';
@@ -2457,7 +2641,7 @@ function renderHistorico(){
 function avisarAlteracaoDeOutro(h){
   const a = h.antes || {};
   const onde = a.data ? (fmtDataSimples(a.data).slice(0,5) + (a.turno ? ' ' + a.turno + ' · ' + (a.territorio||'') : '')) : 'um registro';
-  const verbo = h.tipo==='remocao' ? 'removeu um registro da agenda' : (h.tipo==='restauracao' ? 'restaurou um registro da agenda' : (h.tipo==='dia-marcado' ? 'marcou um dia como feriado/ponto facultativo' : (h.tipo==='dia-desmarcado' ? 'removeu a marcação de um dia' : 'editou a agenda')));
+  const verbo = h.tipo==='remocao' ? 'removeu um registro da agenda' : (h.tipo==='restauracao' ? 'restaurou um registro da agenda' : (h.tipo==='dia-marcado' ? 'marcou um dia como feriado/ponto facultativo' : (h.tipo==='dia-desmarcado' ? 'removeu a marcação de um dia' : (h.tipo==='dia-apagado' ? 'apagou todas as atividades de um dia' : 'editou a agenda'))));
   let just = h.justificativa || ''; if(just.length>90) just = just.slice(0,87)+'…';
   showToast('<b>'+escHtml(h.autor||'Alguém')+'</b> '+verbo+': '+escHtml(onde)+(just ? '. Motivo: '+escHtml(just) : ''), null, null, 9000);
 }
@@ -2491,6 +2675,7 @@ function showToast(msg, undoRow, onUndo, duracao){
     btn.textContent = 'Desfazer';
     btn.onclick = async () => {
       try{
+        if(typeof undoRow === 'function'){ await undoRow(); toast.classList.remove('show'); return; }
         const {id, ...data} = undoRow;
         await dbRef.collection('registros').doc(id).set(data);
         toast.classList.remove('show');
@@ -2643,8 +2828,8 @@ init();
         passInput.onkeydown = null;
         userInput.onkeydown = null;
       }
-      function tryLogin(){
-        if(passInput.value.trim() === GESTOR_PIN){
+      async function tryLogin(){
+        if(await senhaConfere(passInput.value)){
           try{ localStorage.setItem('agendaEmultiGestorNome', userInput.value.trim()); }catch(e){}
           cleanup();
           resolve(true);
