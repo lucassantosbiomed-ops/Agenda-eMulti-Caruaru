@@ -55,12 +55,61 @@
   .gestorbtn{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.28);color:#dfe6f5;font-size:11px;font-weight:700;
     border-radius:20px;padding:5px 12px;cursor:pointer;margin-left:auto;white-space:nowrap;display:inline-flex;align-items:center;}
   .gestorbtn svg{flex-shrink:0;margin-right:5px;}
+  .bellbtn{position:relative;margin-left:auto;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.28);color:#dfe6f5;border-radius:20px;
+    padding:5px 11px;cursor:pointer;display:inline-flex;align-items:center;}
+  .bellbtn:hover{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.5);}
+  .bellbtn + .gestorbtn{margin-left:8px;}
+  .bellcount{background:#e34948;color:#fff;font-size:10px;font-weight:800;border-radius:999px;padding:0 6px;margin-left:6px;line-height:16px;min-width:16px;text-align:center;}
+  .bellcount:empty{display:none;}
+  #modalJustBg{z-index:45;}
+  .vagas-badge{margin-left:5px;font-size:9.5px;font-weight:800;color:var(--accent);background:rgba(46,160,67,.12);border-radius:999px;padding:0 6px;}
+  #modalDiaBg{z-index:40;}
+  .cal-cell.facultativo{background:rgba(138,92,214,.13);border-color:#a98bd8;border-style:dashed;}
+  .cal-cell.facultativo:hover{border-color:#7a4fc7;}
+  .cal-tag.facultativo{background:#7a4fc7;}
+  .cal-legenda i.facultativo{background:rgba(138,92,214,.22);border-color:#a98bd8;border-style:dashed;}
+  .cal-nav .marcar-dia{margin-left:auto;}
+  .fer-aviso-form{margin-top:6px;font-size:11.5px;font-weight:700;color:#b3261e;background:rgba(227,73,72,.09);border:1px solid rgba(227,73,72,.35);border-radius:6px;padding:6px 9px;}
+  .fer-faixa{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;background:rgba(254,194,49,.18);border:1px solid #e0a800;border-radius:9px;padding:8px 12px;margin-bottom:12px;font-size:12px;color:var(--ink);}
+  .fer-faixa .t{font-weight:800;}
+  .fer-faixa .it{display:inline-flex;gap:5px;align-items:center;}
+  .fer-faixa .it.facultativo{color:#5b3aa3;}
+  .fer-faixa button{margin-left:auto;background:none;border:none;color:var(--accent);font-weight:800;font-size:11.5px;cursor:pointer;text-decoration:underline;}
+  .fer-mini{display:inline-block;margin-left:6px;font-size:9px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;background:#b98500;color:#fff;border-radius:999px;padding:1px 6px;vertical-align:middle;}
+  .fer-mini.facultativo{background:#7a4fc7;}
+  .cal-day-aviso{background:rgba(254,194,49,.2);border:1px solid #e0a800;border-radius:8px;padding:9px 12px;font-size:12px;color:var(--ink);margin-bottom:12px;line-height:1.5;}
+  .cal-day-aviso.facultativo{background:rgba(138,92,214,.12);border-color:#a98bd8;}
+  .hist-item.dia-marcado{border-left-color:#7a4fc7;}
+  .hist-item.dia-desmarcado{border-left-color:var(--muted);}
+  .hist-item.dia-marcado .hist-badge{background:#7a4fc7;}
+  .just-resumo{background:var(--surface2);border:1px solid var(--line);border-radius:8px;padding:9px 11px;font-size:12px;color:var(--ink2);margin-bottom:12px;line-height:1.5;}
+  .just-resumo b{color:var(--ink);}
+  .hist-head{display:flex;flex-wrap:wrap;gap:10px;align-items:baseline;margin-bottom:12px;}
+  .hist-head .t{font-size:13px;font-weight:800;color:var(--ink);}
+  .hist-head .s{font-size:11.5px;color:var(--muted);}
+  .hist-item{background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--muted);border-radius:10px;padding:11px 14px;margin-bottom:10px;}
+  .hist-item.edicao{border-left-color:#d99a00;}
+  .hist-item.remocao{border-left-color:var(--danger);}
+  .hist-item.restauracao{border-left-color:var(--accent);}
+  .hist-top{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;font-size:12px;}
+  .hist-badge{font-size:10px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;border-radius:999px;padding:2px 9px;color:#fff;background:var(--muted);}
+  .hist-item.edicao .hist-badge{background:#b98500;}
+  .hist-item.remocao .hist-badge{background:var(--danger);}
+  .hist-item.restauracao .hist-badge{background:var(--accent);}
+  .hist-quando{margin-left:auto;color:var(--muted);font-size:11px;font-family:var(--font-mono);}
+  .hist-reg{margin-top:7px;font-size:12.5px;font-weight:700;color:var(--ink);}
+  .hist-mud{margin-top:6px;font-size:12px;color:var(--ink2);line-height:1.6;}
+  .hist-mud .de{text-decoration:line-through;color:var(--muted);}
+  .hist-just{margin-top:8px;font-size:12px;color:var(--ink2);background:var(--surface2);border-radius:7px;padding:7px 10px;}
+  .hist-just b{font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-right:6px;}
   .gestorbtn:hover{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.5);}
   .gestorbtn.on{background:rgba(95,217,164,.16);border-color:#5fd9a4;color:#dff1e6;}
 
   .toolbar{position:sticky;top:53px;z-index:5;background:var(--surface);border-bottom:1px solid var(--line);
     padding:10px 22px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;}
-  .seg{display:flex;border:1px solid var(--line);border-radius:7px;overflow:hidden;flex-shrink:0;}
+  .seg{display:flex;border:1px solid var(--line);border-radius:7px;overflow-x:auto;overflow-y:hidden;flex-shrink:0;max-width:100%;scrollbar-width:none;}
+  .seg::-webkit-scrollbar{display:none;}
+  .seg button{white-space:nowrap;flex-shrink:0;}
   .seg button{border:none;background:var(--surface);color:var(--ink2);font-size:12px;font-weight:700;padding:7px 12px;cursor:pointer;white-space:nowrap;
     display:inline-flex;align-items:center;gap:6px;}
   .seg button.active{background:var(--navy);color:var(--navy-ink);}
@@ -120,6 +169,20 @@
   .cal-pill{font-size:9.5px;font-weight:700;border-left:3px solid;background:var(--chip-bg);color:var(--ink2);
     padding:2px 5px;border-radius:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .cal-more{font-size:9.5px;font-weight:700;color:var(--muted);padding:0 2px;}
+  /* dias especiais no calendário: feriado (dourado) e reunião (azul) */
+  .cal-cell.feriado{background:rgba(254,194,49,.20);border-color:#e0a800;}
+  .cal-cell.reuniao{background:rgba(74,99,214,.13);border-color:#6f86e0;}
+  .cal-cell.feriado:hover{border-color:#b98500;}
+  .cal-cell.reuniao:hover{border-color:#4a63d6;}
+  .cal-tag{align-self:flex-start;font-size:9px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;border-radius:999px;padding:1px 7px;color:#fff;}
+  .cal-tag.feriado{background:#b98500;}
+  .cal-tag.reuniao{background:#4a63d6;}
+  .cal-legenda{display:flex;flex-wrap:wrap;gap:14px;font-size:11px;color:var(--ink2);margin-bottom:10px;}
+  .cal-legenda span{display:inline-flex;align-items:center;gap:6px;}
+  .cal-legenda i{width:12px;height:12px;border-radius:3px;display:inline-block;border:1.5px solid;}
+  .cal-legenda i.feriado{background:rgba(254,194,49,.35);border-color:#e0a800;}
+  .cal-legenda i.reuniao{background:rgba(74,99,214,.25);border-color:#6f86e0;}
+  @media (max-width:640px){ .cal-tag{display:none;} .cal-cell.feriado .cal-daynum::before,.cal-cell.reuniao .cal-daynum::before{content:'';display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:4px;} .cal-cell.feriado .cal-daynum::before{background:#b98500;} .cal-cell.reuniao .cal-daynum::before{background:#4a63d6;} }
   .cal-day-terr{margin-bottom:14px;}
   .cal-day-terr:last-child{margin-bottom:0;}
   .cal-day-terr-head{font-weight:800;font-size:12.5px;border-left:4px solid;padding:2px 0 6px 9px;margin-bottom:2px;}
@@ -289,6 +352,7 @@
   .gestor-modal-err{font-size:11.5px;font-weight:700;color:var(--danger);margin:-3px 0 10px;}
   .field{margin-bottom:11px;}
   .field label{display:block;font-size:11px;font-weight:700;color:var(--ink2);margin-bottom:4px;}
+  .field textarea{width:100%;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:6px;padding:7px 9px;font-size:12.5px;font-family:inherit;resize:vertical;}
   .field select, .field input{width:100%;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:6px;padding:7px 9px;font-size:12.5px;font-family:inherit;}
   .ativ-list{display:flex;flex-wrap:wrap;gap:7px;border:none;max-height:none;overflow:visible;background:none;}
   .ativ-list label{display:inline-flex;align-items:center;gap:0;padding:6px 13px;font-size:12px;font-weight:600;color:var(--ink2);
@@ -305,7 +369,7 @@
   .btn-primary:disabled{opacity:.6;cursor:not-allowed;}
   .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:#1f2937;color:#fff;padding:10px 18px;border-radius:8px;font-size:12.5px;
     opacity:0;pointer-events:none;transition:opacity .25s;z-index:30;max-width:90vw;}
-  .toast.show{opacity:1;}
+  .toast.show{opacity:1;pointer-events:auto;}
   .toast button{background:none;border:none;color:#8fb1e6;font-weight:800;margin-left:10px;cursor:pointer;font-size:12.5px;}
 
   .letterhead{background:#ffffff;border-bottom:1px solid var(--line);padding:10px 22px;
@@ -328,6 +392,7 @@
   <p class="eyebrow">Secretaria Municipal de Saúde de Caruaru &middot; Coordenação de Promoção à Saúde</p>
   <div class="row">
     <h1 class="brand">AGENDA eMULTI 5</h1>
+    <button class="bellbtn" id="bellBtn" type="button" title="Alterações na agenda" aria-label="Alterações na agenda"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 2.2a3.6 3.6 0 0 0-3.6 3.6c0 3.3-1.4 4.2-1.4 4.2h10s-1.4-.9-1.4-4.2A3.6 3.6 0 0 0 8 2.2Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M6.6 12.4a1.5 1.5 0 0 0 2.8 0" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg><span class="bellcount" id="bellCount"></span></button>
     <button class="gestorbtn" id="gestorBtn" type="button"></button>
   </div>
 </header>
@@ -338,6 +403,7 @@
     <button data-tab="calendario">Calendário</button>
     <button data-tab="painel">Painel</button>
     <button data-tab="agendamentos">Agendamentos <span class="tabcount" id="cntAgendamentos"></span></button>
+    <button data-tab="historico">Histórico <span class="tabcount" id="cntHistorico"></span></button>
   </div>
   <div class="filtro-mes" id="mesFiltroWrap">
     <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><rect x="2" y="3" width="12" height="11" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M2 6.5h12M5 1.5v3M11 1.5v3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
@@ -356,6 +422,7 @@
   <div class="tabpanel active" id="tab-agenda"></div>
   <div class="tabpanel" id="tab-painel"></div>
   <div class="tabpanel" id="tab-agendamentos"></div>
+  <div class="tabpanel" id="tab-historico"></div>
 </main>
 
 <footer>Agenda viva da equipe eMulti 5 — território só aparece quando tem atividade lançada naquela semana.</footer>
@@ -366,6 +433,7 @@
     <div class="sub">O lançamento entra na hora na agenda e no painel de todo mundo.</div>
     <div class="field"><label>Data</label>
       <input id="f_data" type="date">
+      <div class="fer-aviso-form" id="f_fer_aviso" style="display:none;"></div>
     </div>
     <div class="field"><label>Turno</label>
       <select id="f_turno"><option>Manhã</option><option>Tarde</option></select>
@@ -374,8 +442,9 @@
       <select id="f_terr"></select>
     </div>
     <div class="field"><label>Profissional</label>
-      <select id="f_prof"><option value="">Equipe completa / não informado</option></select>
+      <select id="f_prof"><option value="__vazio__">Selecione o profissional…</option><option value="">Equipe completa (todos da equipe)</option></select>
       <div class="autofill" id="f_autofill">&nbsp;</div>
+      <div class="fer-aviso-form" id="f_eq_aviso" style="display:none;"></div>
     </div>
     <div class="field"><label>Atividade(s)</label>
       <div class="ativ-list" id="f_ativ"></div>
@@ -383,6 +452,10 @@
     </div>
     <div class="field"><label>Observação (opcional)</label>
       <input id="f_obs" type="text" placeholder="Detalhe curto, se precisar">
+    </div>
+    <div class="field"><label>Vagas para agendamento de pacientes (opcional)</label>
+      <input id="f_vagas" type="number" min="0" max="99" step="1" placeholder="Ex.: 4 (vazio = sem limite)">
+      <div class="autofill">Quantos pacientes podem ser agendados com você nesse dia e território. Se marcar mais de uma atividade, as vagas valem uma vez só.</div>
     </div>
     <div class="modal-actions">
       <button class="btn-secondary" id="modalCancel">Cancelar</button>
@@ -395,8 +468,15 @@
   <div class="modal">
     <h2 id="modalAgTitle">Novo agendamento</h2>
     <div class="sub">Qualquer um pode cadastrar. A lista completa só aparece no modo gestor (protege CPF e telefone do paciente).</div>
-    <div class="field"><label>Data do agendamento</label>
-      <input id="ag_data" type="date">
+    <div class="field"><label>Território / UBS</label>
+      <select id="ag_unidade"></select>
+    </div>
+    <div class="field"><label>Profissional que vai atender o paciente</label>
+      <select id="ag_profAtendimento"><option value="">Selecione…</option></select>
+    </div>
+    <div class="field"><label>Dia do atendimento</label>
+      <select id="ag_data"></select>
+      <div class="autofill" id="ag_data_info">Escolha o território e o profissional para ver os dias disponíveis.</div>
     </div>
     <div class="field"><label>Horário</label>
       <input id="ag_horario" type="time">
@@ -416,17 +496,11 @@
     <div class="field"><label>Demanda</label>
       <input id="ag_demanda" type="text" placeholder="O que o paciente precisa">
     </div>
-    <div class="field"><label>Território / UBS</label>
-      <select id="ag_unidade"></select>
-    </div>
     <div class="field"><label>ACS de referência (opcional)</label>
       <input id="ag_acs" type="text" placeholder="Nome do ACS, se souber">
     </div>
     <div class="field"><label>Profissional que fez o acolhimento</label>
       <select id="ag_prof"><option value="">Selecione…</option></select>
-    </div>
-    <div class="field"><label>Profissional que vai atender o paciente</label>
-      <select id="ag_profAtendimento"><option value="">Selecione…</option></select>
     </div>
     <div class="modal-actions">
       <button class="btn-secondary" id="modalAgCancel">Cancelar</button>
@@ -476,6 +550,43 @@
     </div>
   </div>
 </div>
+<div class="modal-bg" id="modalJustBg">
+  <div class="modal">
+    <h2 id="justTitulo">Justificar alteração</h2>
+    <div class="sub">Toda alteração e remoção na agenda fica registrada no Histórico, visível para toda a equipe.</div>
+    <div id="justResumo" class="just-resumo"></div>
+    <div class="field"><label>Quem está fazendo a alteração?</label>
+      <select id="just_autor"></select>
+      <input id="just_autor_outro" type="text" placeholder="Digite seu nome" style="display:none;margin-top:6px;">
+    </div>
+    <div class="field" id="justCampo"><label>Justificativa (obrigatória)</label>
+      <textarea id="just_texto" rows="3" placeholder="Explique em poucas palavras o motivo da alteração"></textarea>
+    </div>
+    <p class="gestor-modal-err" id="justErr" style="display:none;"></p>
+    <div class="modal-actions">
+      <button class="btn-secondary" id="justCancel" type="button">Cancelar</button>
+      <button class="btn-primary" id="justOk" type="button">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="modalDiaBg">
+  <div class="modal">
+    <h2>Marcar dia como feriado ou ponto facultativo</h2>
+    <div class="sub">O dia fica destacado para toda a equipe e ninguém consegue lançar atividade nele. Feriados nacionais já entram sozinhos.</div>
+    <div class="field"><label>Data</label><input id="dia_data" type="date"></div>
+    <div class="field"><label>Tipo</label>
+      <select id="dia_tipo"><option value="feriado">Feriado</option><option value="facultativo">Ponto facultativo</option></select>
+    </div>
+    <div class="field"><label>Nome / motivo</label><input id="dia_nome" type="text" placeholder="Ex.: Carnaval, São Pedro, decreto municipal"></div>
+    <p class="gestor-modal-err" id="diaErr" style="display:none;"></p>
+    <div class="modal-actions">
+      <button class="btn-secondary" id="diaCancel" type="button">Cancelar</button>
+      <button class="btn-primary" id="diaOk" type="button">Continuar</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 <div id="pdfSandbox" aria-hidden="true"></div>
 
@@ -536,12 +647,20 @@ function weekLabel(monISO){ const mon=new Date(monISO+'T00:00:00'); const fri=ne
   const f=(d)=>pad2(d.getDate())+'/'+pad2(d.getMonth()+1); return f(mon)+' a '+f(fri); }
 
 // ---------- estado ----------
-let state = { tab:'lista', ym: ymOf(todayISO()), week: mondayOf(todayISO()), q:'' };
+let state = { tab:'lista', ym: ymOf(todayISO()), week: mondayOf(todayISO()), q:'', suspeitos:false };
 let ROWS = [];        // registros vindos do banco: {id, data, turno, territorio, profissional, atividade, obs, criadoEm}
 let AGENDAMENTOS = []; // agendamentos de demanda de paciente: {id, data, horario, nome, nascimento, cpf, telefone, demanda, unidade, acs, profissional, criadoEm}
 let agendamentosError = null;
 let dbReady = false;
+let assinaturaRows = '', assinaturaAg = ''; // pra só redesenhar quando o conteúdo do banco mudou de verdade
 let dbRef = null;
+let HIST = [];                 // histórico de alterações da agenda (coleção "historico")
+let DIAS = {};                 // dias marcados à mão como feriado/ponto facultativo (coleção "diasEspeciais", id = data)
+let diasError = null;
+let historicoError = null;
+const minhasEntradasHist = new Set(); // ids que ESTE navegador acabou de criar (não avisar a própria pessoa)
+const histIdsConhecidos = new Set();
+let histPrimeiraCarga = true;
 
 // ---------- toolbar fixa ----------
 document.getElementById('tabSeg').addEventListener('click', e=>{
@@ -549,8 +668,27 @@ document.getElementById('tabSeg').addEventListener('click', e=>{
   state.tab = b.dataset.tab; render();
 });
 document.getElementById('q').addEventListener('input', e=>{ state.q = e.target.value.toLowerCase(); render(); });
+// Computador compartilhado: se ninguém mexe no app por um tempo, os filtros voltam ao padrão
+// (aba Lista, mês e semana de hoje, busca vazia) para a próxima pessoa não herdar os da anterior.
+let IDLE_RESET_MS = 10 * 60 * 1000;
+let ultimaAtividade = Date.now();
+function resetarFiltrosPadrao(){
+  state.tab = 'lista'; state.ym = ymOf(todayISO()); state.week = mondayOf(todayISO()); state.q = ''; state.suspeitos = false;
+  document.getElementById('q').value = '';
+  render();
+}
+function verificarInatividade(){
+  if(Date.now() - ultimaAtividade < IDLE_RESET_MS) return;
+  if(document.querySelector('.modal-bg.open')) return; // tem formulário/janela aberta: não mexe
+  ultimaAtividade = Date.now();
+  resetarFiltrosPadrao();
+}
+['pointerdown','keydown','touchstart','input'].forEach(ev=>
+  document.addEventListener(ev, ()=>{ ultimaAtividade = Date.now(); }, true));
+setInterval(verificarInatividade, 30000);
+document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) verificarInatividade(); });
 document.getElementById('clearBtn').addEventListener('click', ()=>{
-  state.week=null; state.q=''; document.getElementById('q').value=''; render();
+  state.week=null; state.q=''; state.suspeitos=false; document.getElementById('q').value=''; render();
 });
 
 function passaBuscaRegistro(r){
@@ -559,10 +697,21 @@ function passaBuscaRegistro(r){
   const hay = (r.profissional+' '+r.atividade+' '+r.territorio+' '+(nuc||'')+' '+(r.obs||'')).toLowerCase();
   return hay.includes(state.q);
 }
+// "Equipe completa" lançada em atividade que normalmente tem dono (atendimento, visita, grupos...): provável nome esquecido
+function ehEquipeSuspeita(r){ return !r.profissional && !ATIV_EQUIPE_OK.includes(r.atividade); }
+function barraSuspeitosHtml(){
+  const total = ROWS.filter(r => ymOf(r.data)===state.ym && ehEquipeSuspeita(r)).length;
+  if(state.suspeitos){
+    return `<div class="fer-faixa" style="background:rgba(227,73,72,.09);border-color:rgba(227,73,72,.45)"><span class="t">Mostrando só "Equipe completa" suspeita (${total} em ${monthLabel(state.ym)}).</span><span>Clique em ✎ e escolha o profissional que fez a atividade.</span><button type="button" class="suspeitos-btn">Voltar para todos os registros</button></div>`;
+  }
+  if(!total) return '';
+  return `<div class="fer-faixa" style="background:rgba(227,73,72,.07);border-color:rgba(227,73,72,.35)"><span class="t">${total} registro${total===1?'':'s'} de "Equipe completa" em atividade que costuma ter profissional (${monthLabel(state.ym)}).</span><button type="button" class="suspeitos-btn">Ver e corrigir</button></div>`;
+}
 function filteredRows(){
   return ROWS.filter(r=>{
     if(ymOf(r.data) !== state.ym) return false;
     if(state.week && mondayOf(r.data) !== state.week) return false;
+    if(state.suspeitos && !ehEquipeSuspeita(r)) return false;
     return passaBuscaRegistro(r);
   });
 }
@@ -590,12 +739,15 @@ function render(){
   document.getElementById('tab-agendamentos').classList.toggle('active', state.tab==='agendamentos');
   const ehAgendamentos = state.tab==='agendamentos';
   const ehCalendario = state.tab==='calendario';
-  document.getElementById('mesFiltroWrap').style.display = (ehAgendamentos || ehCalendario) ? 'none' : '';
-  document.getElementById('semChips').style.display = (ehAgendamentos || ehCalendario) ? 'none' : '';
-  document.getElementById('q').placeholder = ehAgendamentos ? 'Buscar por nome, CPF, telefone ou demanda…' : 'Buscar profissional, núcleo ou atividade…';
+  const ehHistorico = state.tab==='historico';
+  document.getElementById('tab-historico').classList.toggle('active', ehHistorico);
+  document.getElementById('mesFiltroWrap').style.display = (ehAgendamentos || ehCalendario || ehHistorico) ? 'none' : '';
+  document.getElementById('semChips').style.display = (ehAgendamentos || ehCalendario || ehHistorico) ? 'none' : '';
+  document.getElementById('q').placeholder = ehAgendamentos ? 'Buscar por nome, CPF, telefone ou demanda…' : (ehHistorico ? 'Buscar por quem alterou, justificativa, território…' : 'Buscar profissional, núcleo ou atividade…');
   document.getElementById('addBtn').textContent = ehAgendamentos ? '+ Novo agendamento' : '+ Novo registro';
+  document.getElementById('addBtn').style.display = ehHistorico ? 'none' : '';
   const pdfAllBtn = document.getElementById('pdfAllBtn');
-  pdfAllBtn.style.display = ehAgendamentos ? (isGestor ? '' : 'none') : '';
+  pdfAllBtn.style.display = ehHistorico ? 'none' : (ehAgendamentos ? (isGestor ? '' : 'none') : '');
   pdfAllBtn.title = ehAgendamentos
     ? 'Gerar PDF dos agendamentos, com filtro de unidade, período e profissional'
     : 'Gerar PDF da agenda, com opção de filtrar por unidade e profissional';
@@ -603,9 +755,11 @@ function render(){
   renderSemanaChips();
   document.getElementById('cntAgenda').textContent = ROWS.filter(r=>ymOf(r.data)===state.ym).length || '';
   document.getElementById('cntAgendamentos').textContent = AGENDAMENTOS.length || '';
+  atualizarContadorHistorico();
   if(state.tab==='lista') renderAgenda();
   else if(state.tab==='calendario') renderAgendaCalendario();
   else if(state.tab==='agendamentos') renderAgendamentos();
+  else if(state.tab==='historico') renderHistorico();
   else renderPainel();
 }
 
@@ -615,10 +769,18 @@ function renderMesFiltro(){
   yms.add(state.ym);
   const sorted = [...yms].sort();
   const el = document.getElementById('mesFiltro');
-  el.innerHTML = sorted.map(ym=>
-    `<option value="${ym}"${ym===state.ym?' selected':''}>${monthLabel(ym)}</option>`
-  ).join('');
+  // Quando outra pessoa lança/edita algo, o app se redesenha; refazer o <select> a cada vez
+  // fechava o menu que a pessoa tinha aberto. Agora só mexe se as opções realmente mudaram,
+  // e nunca enquanto o menu está em uso.
+  const sig = sorted.join('|');
+  if(el.dataset.sig !== sig){
+    if(document.activeElement === el) return; // em uso: atualiza depois que sair do campo
+    el.innerHTML = sorted.map(ym=>`<option value="${ym}">${monthLabel(ym)}</option>`).join('');
+    el.dataset.sig = sig;
+  }
+  if(el.value !== state.ym && document.activeElement !== el) el.value = state.ym;
   el.onchange = () => { state.ym = el.value; state.week = null; render(); };
+  el.onblur = () => { renderMesFiltro(); };
 }
 
 function renderSemanaChips(){
@@ -626,6 +788,9 @@ function renderSemanaChips(){
   if(state.ym === ymOf(todayISO())) weeks.add(mondayOf(todayISO()));
   const sorted = [...weeks].sort();
   const el = document.getElementById('semChips');
+  const sigSem = sorted.join('|') + '#' + String(state.week);
+  if(el.dataset.sig === sigSem) return; // nada mudou: não redesenha à toa
+  el.dataset.sig = sigSem;
   el.innerHTML = '';
   const allChip = document.createElement('div');
   allChip.className = 'chip' + (state.week===null?' active':'');
@@ -645,10 +810,18 @@ async function removeRegistro(id){
   if(!isGestor){ showToast('Entre na área do gestor (topo do app) para remover um registro.'); return; }
   if(!dbRef) return;
   const removed = ROWS.find(r=>r.id===id);
+  if(!removed) return;
+  const just = await pedirJustificativa('Justificar remoção', 'Você vai remover: <b>' + escHtml(rotuloRegistro(removed)) + '</b>' + (removed.obs ? '<br>Obs.: ' + escHtml(removed.obs) : ''));
+  if(!just) return;
+  const histId = await registrarHistorico({ tipo:'remocao', registroId:id, antes:snapshotRegistro(removed), autor:just.autor, justificativa:just.justificativa });
+  const aviso = histId ? '' : ' Atenção: o histórico não pôde ser gravado.';
   try{
     await dbRef.doc('registros/'+id).delete();
-    showToast('Registro removido.', removed);
+    showToast('Registro removido.' + aviso, removed, async () => {
+      await registrarHistorico({ tipo:'restauracao', registroId:id, antes:snapshotRegistro(removed), autor:just.autor, justificativa:'Remoção desfeita logo em seguida.' });
+    });
   }catch(e){
+    await desfazerHistorico(histId);
     showToast('Não deu para remover agora. Tente de novo.');
   }
 }
@@ -661,6 +834,9 @@ function editRegistro(id){
   fData.value = r.data;
   document.getElementById('f_turno').value = r.turno;
   fTerr.value = r.territorio;
+  if(r.profissional && ![...fProf.options].some(o=>o.value===r.profissional)){
+    const o = document.createElement('option'); o.value = r.profissional; o.textContent = r.profissional; fProf.appendChild(o);
+  }
   fProf.value = r.profissional || '';
   updateAutofill();
   const outraTxtEd = document.getElementById('f_outra_txt');
@@ -673,18 +849,27 @@ function editRegistro(id){
     outraTxtEd.value = ehAtividadeFixa ? '' : (r.atividade || '');
   }
   document.getElementById('f_obs').value = r.obs || '';
+  document.getElementById('f_vagas').value = (r.vagas==null ? '' : r.vagas);
   setModalMode();
   modalBg.classList.add('open');
+  verificarFeriadoForm();
+  verificarEquipeCompleta();
 }
 
 function renderAgenda(){
   const rows = filteredRows();
   const target = document.getElementById('tab-agenda');
+  const faixa = faixaFeriadosHtml() + barraSuspeitosHtml();
+  const ligarFaixa = () => {
+    const b = target.querySelector('.marcar-dia-btn'); if(b) b.onclick = () => abrirMarcarDia('');
+    const sb = target.querySelector('.suspeitos-btn'); if(sb) sb.onclick = () => { state.suspeitos = !state.suspeitos; if(state.suspeitos) state.week = null; render(); };
+  };
   if(rows.length===0){
-    target.innerHTML = `<div class="empty-hero">
-      <div class="big">Nenhum registro nessa semana ainda</div>
-      <div class="small">Use "+ Novo registro" para lançar o primeiro turno.</div>
+    target.innerHTML = faixa + `<div class="empty-hero">
+      <div class="big">${state.suspeitos ? 'Nenhum registro suspeito neste mês' : 'Nenhum registro nessa semana ainda'}</div>
+      <div class="small">${state.suspeitos ? 'Todas as atividades de "Equipe completa" deste mês são coletivas.' : 'Use "+ Novo registro" para lançar o primeiro turno.'}</div>
     </div>`;
+    ligarFaixa();
     return;
   }
   const byTerr = {};
@@ -696,7 +881,7 @@ function renderAgenda(){
     byTerr[r.territorio][r.data][r.turno][r.atividade].push(r);
   });
   const order = TERRITORIOS.filter(t=>byTerr[t]);
-  let html = '';
+  let html = faixa;
   order.forEach(terr=>{
     const color = TERR_COLOR[terr] || '#ccc';
     const dates = Object.keys(byTerr[terr]).sort();
@@ -735,9 +920,12 @@ function renderAgenda(){
           }
           const ativChips = entries.map(({ativ, r})=>{
             const title = r.obs ? ` title="${r.obs.replace(/"/g,'&quot;')}"` : '';
-            return `<span class="ativ-chip"${title}>${ativ}<span class="edit" data-id="${r.id}" title="Editar">✎</span><span class="rm" data-id="${r.id}" title="Remover">✕</span></span>`;
+            const vg = (r.vagas!=null && r.vagas!=='') ? `<span class="vagas-badge" title="Vagas para agendamento de pacientes">${r.vagas} vaga${Number(r.vagas)===1?'':'s'}</span>` : '';
+            return `<span class="ativ-chip"${title}>${ativ}${vg}<span class="edit" data-id="${r.id}" title="Editar">✎</span><span class="rm" data-id="${r.id}" title="Remover">✕</span></span>`;
           }).join('');
-          bodyRows += `<tr><td class="dia">${fmtDia(dataISO)}</td><td class="turno">${turno}</td><td>${profHtml}</td><td>${ativChips}</td></tr>`;
+          const _fer = infoDia(dataISO);
+          const _ferTag = _fer ? `<span class="fer-mini ${_fer.tipo}" title="${escHtml(_fer.nome||'')}">${_fer.tipo==='facultativo'?'Facult.':'Feriado'}</span>` : '';
+          bodyRows += `<tr><td class="dia">${fmtDia(dataISO)}${_ferTag}</td><td class="turno">${turno}</td><td>${profHtml}</td><td>${ativChips}</td></tr>`;
         });
       });
     });
@@ -749,6 +937,7 @@ function renderAgenda(){
     </div>`;
   });
   target.innerHTML = html;
+  ligarFaixa();
   target.querySelectorAll('.rm').forEach(el=>{
     el.addEventListener('click', (e)=>{ e.stopPropagation(); removeRegistro(el.dataset.id); });
   });
@@ -763,6 +952,10 @@ function renderAgenda(){
 // ---------- Agenda em formato de calendário (mês inteiro) ----------
 function renderAgendaCalendario(){
   const target = document.getElementById('tab-agenda');
+  // Se alguém está com o detalhe de um dia aberto e outra pessoa altera a agenda, o calendário é redesenhado:
+  // lembra qual dia estava aberto para reabrir (senão a janela fechava sozinha no meio do uso)
+  const bgAnt = document.getElementById('calDayBg');
+  const diaAberto = (bgAnt && bgAnt.classList.contains('open')) ? bgAnt.dataset.iso : null;
   const [y,m] = state.ym.split('-').map(Number);
   const rows = filteredRowsMesInteiro();
   const byDate = {};
@@ -773,6 +966,16 @@ function renderAgendaCalendario(){
   const totalCelulas = Math.ceil((offsetInicio+totalDias)/7)*7;
   const hojeIso = todayISO();
   const maxPills = 3;
+  // Dia de feriado/reunião é calculado com todos os lançamentos do mês (a busca por nome
+  // não pode apagar a marcação). Feriado tem prioridade sobre reunião.
+  const ATIV_REUNIAO = ['Reuniões','Reunião Geral eMulti','Reunião com a Estratégia de Saúde da Família'];
+  const tipoDoDia = {};
+  ROWS.forEach(r=>{
+    if(r.atividade==='Feriado') tipoDoDia[r.data] = 'feriado';
+    else if(ATIV_REUNIAO.includes(r.atividade) && tipoDoDia[r.data]!=='feriado') tipoDoDia[r.data] = 'reuniao';
+  });
+  // feriado automático (nacional) ou marcado à mão tem prioridade sobre qualquer outra marcação
+  const nomeDoDia = {};
 
   let cellsHtml = '';
   for(let i=0;i<totalCelulas;i++){
@@ -805,8 +1008,13 @@ function renderAgendaCalendario(){
     if(!dentroDoMes) classes.push('out');
     if(iso===hojeIso) classes.push('today');
     if(entradas.length) classes.push('has-data');
+    const infoFer = dentroDoMes ? infoDia(iso) : null;
+    if(infoFer) nomeDoDia[iso] = infoFer.nome;
+    const tipo = dentroDoMes ? (infoFer ? infoFer.tipo : tipoDoDia[iso]) : null;
+    if(tipo) classes.push(tipo);
     cellsHtml += `<div class="${classes.join(' ')}" data-date="${iso}" data-in-month="${dentroDoMes?'1':'0'}">
       <div class="cal-daynum">${dNum}</div>
+      ${tipo ? `<span class="cal-tag ${tipo}" title="${escHtml(nomeDoDia[iso]||'')}">${tipo==='feriado'?'Feriado':(tipo==='facultativo'?'Facultativo':'Reunião')}</span>` : ''}
       <div class="cal-pills">${pillsHtml}</div>
     </div>`;
   }
@@ -818,7 +1026,9 @@ function renderAgendaCalendario(){
         <div class="cal-month-label">${monthLabel(state.ym)}</div>
         <button class="btn-secondary" id="calToday" type="button">Hoje</button>
         <button class="btn-secondary" id="calNext" type="button">Próximo mês ›</button>
+        <button class="btn-secondary marcar-dia" id="calMarcar" type="button">Marcar feriado / ponto facultativo</button>
       </div>
+      <div class="cal-legenda"><span><i class="feriado"></i>Feriado</span><span><i class="facultativo"></i>Ponto facultativo</span><span><i class="reuniao"></i>Reunião</span></div>
       <div class="cal-weekdays">${DIA_ABBR.map(d=>`<div>${d}</div>`).join('')}</div>
       <div class="cal-grid">${cellsHtml}</div>
     </div>
@@ -835,6 +1045,7 @@ function renderAgendaCalendario(){
   `;
   document.getElementById('calPrev').onclick = () => { state.ym = addMonths(state.ym, -1); state.week=null; render(); };
   document.getElementById('calNext').onclick = () => { state.ym = addMonths(state.ym, 1); state.week=null; render(); };
+  document.getElementById('calMarcar').onclick = () => abrirMarcarDia('');
   document.getElementById('calToday').onclick = () => { state.ym = ymOf(todayISO()); state.week=null; render(); };
   target.querySelectorAll('.cal-cell').forEach(el=>{
     el.addEventListener('click', ()=>{
@@ -842,15 +1053,22 @@ function renderAgendaCalendario(){
       else { state.ym = ymOf(el.dataset.date); state.week = null; render(); }
     });
   });
+  if(diaAberto && diaAberto.slice(0,7)===state.ym) openCalDay(diaAberto);
 }
 
 function openCalDay(iso){
   const rowsDoDia = filteredRowsMesInteiro().filter(r=>r.data===iso);
   const bg = document.getElementById('calDayBg');
+  bg.dataset.iso = iso;
   document.getElementById('calDayTitle').textContent = fmtDataExtensa(iso);
   const body = document.getElementById('calDayBody');
+  const infoDia_ = infoDia(iso);
+  let avisoDia = '';
+  if(infoDia_){
+    avisoDia = `<div class="cal-day-aviso ${infoDia_.tipo}"><b>${rotuloTipoDia(infoDia_)}${infoDia_.nome ? ': ' + escHtml(infoDia_.nome) : ''}</b> (${infoDia_.origem==='nacional' ? 'feriado nacional, automático' : 'marcado pela equipe'}). Não é possível lançar novas atividades neste dia.</div>`;
+  }
   if(rowsDoDia.length===0){
-    body.innerHTML = `<p class="sub">Nenhum lançamento nesse dia.</p>`;
+    body.innerHTML = avisoDia + `<p class="sub">Nenhum lançamento nesse dia.</p>`;
   } else {
     const byTerr = {};
     rowsDoDia.forEach(r=>{ (byTerr[r.territorio] = byTerr[r.territorio] || []).push(r); });
@@ -892,14 +1110,15 @@ function openCalDay(iso){
           }
           const ativChips = entries.map(r=>{
             const title = r.obs ? ` title="${r.obs.replace(/"/g,'&quot;')}"` : '';
-            return `<span class="ativ-chip"${title}>${r.atividade}<span class="edit" data-id="${r.id}" title="Editar">✎</span><span class="rm" data-id="${r.id}" title="Remover">✕</span></span>`;
+            const vg = (r.vagas!=null && r.vagas!=='') ? `<span class="vagas-badge" title="Vagas para agendamento de pacientes">${r.vagas} vaga${Number(r.vagas)===1?'':'s'}</span>` : '';
+            return `<span class="ativ-chip"${title}>${r.atividade}${vg}<span class="edit" data-id="${r.id}" title="Editar">✎</span><span class="rm" data-id="${r.id}" title="Remover">✕</span></span>`;
           }).join('');
           html += `<tr><td class="turno">${turno}</td><td>${profHtml}</td><td>${ativChips}</td></tr>`;
         });
       });
       html += `</tbody></table></div>`;
     });
-    body.innerHTML = html;
+    body.innerHTML = avisoDia + html;
     body.querySelectorAll('.rm').forEach(el=>{
       el.addEventListener('click', async ()=>{ await removeRegistro(el.dataset.id); openCalDay(iso); render(); });
     });
@@ -907,11 +1126,21 @@ function openCalDay(iso){
       el.addEventListener('click', ()=>{ editRegistro(el.dataset.id); });
     });
   }
-  document.getElementById('calDayAdd').onclick = () => {
+  const addDia = document.getElementById('calDayAdd');
+  addDia.style.display = infoDia_ ? 'none' : '';
+  addDia.onclick = () => {
     bg.classList.remove('open');
     fData.value = iso;
     document.getElementById('addBtn').click();
   };
+  let marcarBtn = document.getElementById('calDayMarcar');
+  if(!marcarBtn){
+    marcarBtn = document.createElement('button'); marcarBtn.id = 'calDayMarcar'; marcarBtn.type = 'button'; marcarBtn.className = 'btn-secondary';
+    document.getElementById('calDayClose').parentElement.insertBefore(marcarBtn, addDia);
+  }
+  if(!infoDia_){ marcarBtn.style.display = ''; marcarBtn.textContent = 'Marcar como feriado / facultativo'; marcarBtn.onclick = () => { bg.classList.remove('open'); abrirMarcarDia(iso); }; }
+  else if(infoDia_.origem==='manual'){ marcarBtn.style.display = ''; marcarBtn.textContent = 'Remover marcação do dia'; marcarBtn.onclick = async () => { bg.classList.remove('open'); await desmarcarDia(iso); }; }
+  else marcarBtn.style.display = 'none';
   document.getElementById('calDayClose').onclick = () => bg.classList.remove('open');
   bg.classList.add('open');
 }
@@ -1577,21 +1806,53 @@ ATIVIDADES.forEach(a=>{
 
 function updateAutofill(){
   const info = PROF_LOOKUP[fProf.value];
-  document.getElementById('f_autofill').innerHTML = info ? `${info.nuc} · ${info.papel}` : '&nbsp;';
+  const el = document.getElementById('f_autofill');
+  fProf.style.borderColor = '';
+  if(fProf.value === ''){
+    // "Equipe completa" escolhida: lembrete para quem só esqueceu de marcar o próprio nome
+    el.innerHTML = '⚠ Vai aparecer como "Equipe completa", sem nome de profissional. Se a atividade é só sua, escolha seu nome.';
+    el.style.color = '#b45309'; el.style.fontWeight = '700';
+  } else {
+    el.innerHTML = info ? `${info.nuc} · ${info.papel}` : '&nbsp;';
+    el.style.color = ''; el.style.fontWeight = '';
+  }
 }
 fProf.addEventListener('change', updateAutofill);
+
+// "Equipe completa" (sem nome) só vale para atividades coletivas; atendimento, visita, grupos etc. exigem o profissional.
+const ATIV_EQUIPE_OK = ['Reuniões','Reunião Geral eMulti','Reunião com a Estratégia de Saúde da Família','Educação permanente','Curso / capacitação','Atividade institucional','Feriado','Facultativo ponto','Outra (especificar)'];
+function ativsSemDono(ativsBrutas){
+  if(fProf.value !== '') return [];
+  let lista = ativsBrutas.filter(a => !ATIV_EQUIPE_OK.includes(a));
+  // registro antigo já lançado assim: dá para editar outros campos sem ser obrigado a mexer nisso
+  if(editingId){ const r = ROWS.find(x=>x.id===editingId); if(r && !r.profissional) lista = lista.filter(a => a !== r.atividade); }
+  return lista;
+}
+function verificarEquipeCompleta(){
+  const aviso = document.getElementById('f_eq_aviso');
+  const ruins = ativsSemDono([...fAtiv.querySelectorAll('input[type="checkbox"]:checked')].map(cb=>cb.value));
+  if(ruins.length){
+    aviso.textContent = 'Equipe completa só vale para atividades coletivas (reuniões, educação permanente, capacitação, atividade institucional). Para "' + ruins.join('", "') + '", escolha o profissional.';
+    aviso.style.display = 'block';
+  } else aviso.style.display = 'none';
+}
+fProf.addEventListener('change', verificarEquipeCompleta);
+fAtiv.addEventListener('change', verificarEquipeCompleta);
 
 document.getElementById('addBtn').onclick = () => {
   if(state.tab==='agendamentos'){ openAgendamentoModal(); return; }
   editingId = null;
   document.getElementById('f_obs').value = '';
-  fProf.value = '';
+  document.getElementById('f_vagas').value = '';
+  fProf.value = '__vazio__'; // começa sem ninguém escolhido: obriga a pessoa a marcar o nome (ou "Equipe completa")
   fAtiv.querySelectorAll('input[type="checkbox"]').forEach(cb=>cb.checked=false);
   { const ot = document.getElementById('f_outra_txt'); if(ot){ ot.style.display='none'; ot.value=''; } }
   if(!fData.value) fData.value = todayISO();
   updateAutofill();
   setModalMode();
   modalBg.classList.add('open');
+  verificarFeriadoForm();
+  verificarEquipeCompleta();
 };
 
 // ---------- modal "novo agendamento" ----------
@@ -1616,6 +1877,54 @@ function maskTelefone(v){
 agCpf.addEventListener('input', ()=>{ agCpf.value = maskCpf(agCpf.value); });
 agTel.addEventListener('input', ()=>{ agTel.value = maskTelefone(agTel.value); });
 
+// Dias em que o profissional informou (na agenda) que estará no território, com as vagas de cada um.
+const ATIV_SEM_PRESENCA = ['Folga','Atestado médico','Feriado','Facultativo ponto'];
+function diasDisponiveisAg(terr, prof){
+  const hoje = todayISO();
+  const porDia = {};
+  ROWS.forEach(r=>{
+    if(r.profissional!==prof || r.territorio!==terr || r.data < hoje || ATIV_SEM_PRESENCA.includes(r.atividade)) return;
+    const d = porDia[r.data] = porDia[r.data] || { limite:null };
+    if(r.vagas!=null && r.vagas!=='' && !isNaN(Number(r.vagas))) d.limite = (d.limite||0) + Number(r.vagas);
+  });
+  Object.keys(porDia).forEach(iso=>{
+    if(infoDia(iso)){ delete porDia[iso]; return; }
+    const usados = AGENDAMENTOS.filter(a=>a.data===iso && a.unidade===terr && a.profissionalAtendimento===prof && a.id!==editingAgId).length;
+    porDia[iso].usados = usados;
+    porDia[iso].restam = porDia[iso].limite==null ? null : porDia[iso].limite - usados;
+  });
+  return porDia;
+}
+function rotuloVagas(d){
+  if(d.restam==null) return 'sem limite de vagas';
+  if(d.restam<=0) return 'lotado';
+  return d.restam + (d.restam===1 ? ' vaga restante' : ' vagas restantes');
+}
+function atualizarDatasAg(dataAtual){
+  const terr = agUnidade.value, prof = agProfAtendimento.value;
+  const info = document.getElementById('ag_data_info');
+  const manter = dataAtual !== undefined ? dataAtual : agData.value;
+  agData.innerHTML = '';
+  const add = (v,t,dis) => { const o=document.createElement('option'); o.value=v; o.textContent=t; if(dis) o.disabled=true; agData.appendChild(o); return o; };
+  if(!prof){
+    add('', 'Escolha o profissional primeiro', false);
+    info.textContent = 'Só aparecem os dias em que o profissional informou, na agenda, que estará nesse território.';
+    return;
+  }
+  const dias = diasDisponiveisAg(terr, prof);
+  const isos = Object.keys(dias).sort();
+  add('', isos.length ? 'Selecione o dia…' : 'Nenhum dia informado', false);
+  isos.forEach(iso => add(iso, fmtDia(iso) + '/' + iso.slice(0,4) + ' · ' + rotuloVagas(dias[iso]), dias[iso].restam!=null && dias[iso].restam<=0 && iso!==manter));
+  // agendamento antigo cuja data já não está na lista (ex.: edição de um registro existente): mantém visível
+  if(manter && !dias[manter]) add(manter, fmtDia(manter) + '/' + manter.slice(0,4) + ' (data atual do agendamento)', false);
+  agData.value = manter && [...agData.options].some(o=>o.value===manter) ? manter : '';
+  info.textContent = isos.length
+    ? 'Dias em que ' + prof + ' informou que estará em ' + terr + '. Dias lotados não podem ser escolhidos.'
+    : prof + ' ainda não lançou atividade em ' + terr + ' para os próximos dias. Peça para lançar na agenda (com as vagas) antes de agendar.';
+}
+agUnidade.addEventListener('change', ()=>atualizarDatasAg(''));
+agProfAtendimento.addEventListener('change', ()=>atualizarDatasAg(''));
+
 let editingAgId = null;
 function setModalAgMode(){
   document.getElementById('modalAgTitle').textContent = editingAgId ? 'Editar agendamento' : 'Novo agendamento';
@@ -1632,7 +1941,7 @@ function openAgendamentoModal(){
   document.getElementById('ag_acs').value = '';
   agProf.value = '';
   agProfAtendimento.value = '';
-  if(!agData.value) agData.value = todayISO();
+  atualizarDatasAg('');
   setModalAgMode();
   modalAgBg.classList.add('open');
 }
@@ -1690,7 +1999,6 @@ function editAgendamento(id){
   const a = AGENDAMENTOS.find(x=>x.id===id);
   if(!a) return;
   editingAgId = id;
-  agData.value = a.data;
   document.getElementById('ag_horario').value = a.horario || '';
   document.getElementById('ag_nome').value = a.nome || '';
   document.getElementById('ag_nasc').value = a.nascimento || '';
@@ -1701,6 +2009,7 @@ function editAgendamento(id){
   document.getElementById('ag_acs').value = a.acs || '';
   agProf.value = a.profissional || '';
   agProfAtendimento.value = a.profissionalAtendimento || '';
+  atualizarDatasAg(a.data);
   setModalAgMode();
   modalAgBg.classList.add('open');
 }
@@ -1712,7 +2021,15 @@ document.getElementById('modalAgSave').onclick = async () => {
         demanda = document.getElementById('ag_demanda').value.trim(), unidade = agUnidade.value,
         acs = document.getElementById('ag_acs').value.trim(), profissional = agProf.value,
         profissionalAtendimento = agProfAtendimento.value;
-  if(!data){ showToast('Escolha uma data.'); return; }
+  if(!profissionalAtendimento){ showToast('Escolha o profissional que vai atender o paciente.'); return; }
+  if(!data){ showToast('Escolha o dia do atendimento (só aparecem os dias em que o profissional estará no território).'); return; }
+  { const original = editingAgId ? AGENDAMENTOS.find(x=>x.id===editingAgId) : null;
+    const mesmo = original && original.data===data && original.unidade===unidade && original.profissionalAtendimento===profissionalAtendimento;
+    if(!mesmo){
+      const d = diasDisponiveisAg(unidade, profissionalAtendimento)[data];
+      if(!d){ showToast('Esse dia não está disponível: o profissional não informou atividade nesse território nessa data.'); atualizarDatasAg(''); return; }
+      if(d.restam!=null && d.restam<=0){ showToast('Esse dia está lotado. Escolha outro dia.'); atualizarDatasAg(''); return; }
+    } }
   if(!nome){ showToast('Informe o nome do paciente.'); return; }
   if(!demanda){ showToast('Informe a demanda.'); return; }
   if(!dbRef){ showToast('Sem conexão com o banco agora — tente novamente em instantes.'); return; }
@@ -1746,26 +2063,65 @@ document.getElementById('modalSave').onclick = async () => {
         terr = fTerr.value, prof = fProf.value,
         outraTxtSave = document.getElementById('f_outra_txt'),
         ativsBrutas = [...fAtiv.querySelectorAll('input[type="checkbox"]:checked')].map(cb=>cb.value),
-        obs = document.getElementById('f_obs').value.trim();
+        obs = document.getElementById('f_obs').value.trim(),
+        vagasTxt = document.getElementById('f_vagas').value.trim();
+  const vagas = vagasTxt==='' ? '' : Math.max(0, parseInt(vagasTxt,10) || 0);
   if(ativsBrutas.includes('Outra (especificar)') && !(outraTxtSave && outraTxtSave.value.trim())){
     showToast('Digite o nome da atividade em "Outra (especificar)".');
     return;
   }
   const ativs = ativsBrutas.map(a => a === 'Outra (especificar)' ? outraTxtSave.value.trim() : a);
   if(!data){ showToast('Escolha uma data.'); return; }
+  { const bloq = dataBloqueada(data);
+    if(bloq){ showToast(rotuloTipoDia(bloq) + (bloq.nome ? ' (' + escHtml(bloq.nome) + ')' : '') + ': não é possível lançar atividade nesse dia. Escolha outra data.'); return; } }
+  if(prof === '__vazio__'){
+    showToast('Escolha o profissional. Se a atividade for da equipe toda, marque "Equipe completa".');
+    fProf.style.borderColor = '#e34948'; fProf.focus();
+    return;
+  }
   if(ativs.length===0){ showToast('Marque ao menos uma atividade.'); return; }
+  { const ruins = ativsSemDono(ativsBrutas);
+    if(ruins.length){
+      showToast('Equipe completa só vale para atividades coletivas. Para "' + escHtml(ruins.join('", "')) + '", escolha o profissional.');
+      fProf.style.borderColor = '#e34948'; fProf.focus();
+      return;
+    } }
   if(!dbRef){ showToast('Sem conexão com o banco agora — tente novamente em instantes.'); return; }
   if(editingId && !isGestor){ showToast('Entre no modo gestor para salvar a edição.'); return; }
+  // Edição: pede a justificativa ANTES de salvar e só registra se algo realmente mudou.
+  let justEdicao = null, mudancasEdicao = [], antesEdicao = null;
+  if(editingId){
+    // Nesse modo só dá para marcar uma atividade; para acrescentar outra, usa-se "+ Novo registro".
+    if(ativs.length>1){ showToast('Ao editar, marque só uma atividade. Para outra atividade, use "+ Novo registro".'); return; }
+    const antigo = ROWS.find(r=>r.id===editingId);
+    if(antigo){
+      antesEdicao = snapshotRegistro(antigo);
+      mudancasEdicao = mudancasEntre(antigo, { data, turno, territorio: terr, profissional: prof, atividade: ativs[0], obs, vagas });
+      if(!mudancasEdicao.length){
+        editingId = null; setModalMode(); modalBg.classList.remove('open');
+        showToast('Nenhuma alteração para salvar.');
+        return;
+      }
+    }
+    justEdicao = await pedirJustificativa('Justificar alteração',
+      '<b>' + escHtml(rotuloRegistro(antigo || {data,turno,territorio:terr,atividade:ativs[0],profissional:prof})) + '</b>' +
+      mudancasEdicao.map(m => '<br>' + escHtml(m.campo) + ': <s>' + escHtml(m.de) + '</s> → <b>' + escHtml(m.para) + '</b>').join(''));
+    if(!justEdicao) return;
+  }
   const saveBtn = document.getElementById('modalSave');
   saveBtn.disabled = true; saveBtn.textContent = 'Salvando…';
   try{
     if(editingId){
-      // Edição atualiza SOMENTE o documento existente (nunca cria outro). Nesse modo só dá
-      // para marcar uma atividade; para acrescentar outra, usa-se "+ Novo registro".
-      if(ativs.length>1){ showToast('Ao editar, marque só uma atividade. Para outra atividade, use "+ Novo registro".'); saveBtn.disabled=false; saveBtn.textContent='Salvar alterações'; return; }
-      await dbRef.doc('registros/'+editingId).update({
-        data, turno, territorio: terr, profissional: prof, atividade: ativs[0], obs
-      });
+      // Edição atualiza SOMENTE o documento existente (nunca cria outro).
+      const histId = await registrarHistorico({ tipo:'edicao', registroId:editingId, antes:antesEdicao, mudancas:mudancasEdicao, autor:justEdicao.autor, justificativa:justEdicao.justificativa });
+      try{
+        await dbRef.doc('registros/'+editingId).update({
+          data, turno, territorio: terr, profissional: prof, atividade: ativs[0], obs, vagas
+        });
+      }catch(errUp){
+        await desfazerHistorico(histId);
+        throw errUp;
+      }
       modalBg.classList.remove('open');
       state.ym = ymOf(data); state.week = mondayOf(data);
       editingId = null;
@@ -1774,12 +2130,13 @@ document.getElementById('modalSave').onclick = async () => {
       fAtiv.querySelectorAll('input[type="checkbox"]').forEach(cb=>cb.checked=false);
       if(outraTxtSave){ outraTxtSave.style.display='none'; outraTxtSave.value=''; }
       render();
-      showToast('Registro atualizado.');
+      showToast('Registro atualizado.' + (histId ? '' : ' Atenção: o histórico não pôde ser gravado.'));
     } else {
-      await Promise.all(ativs.map(ativ => dbRef.collection('registros').add({
+      // as vagas valem uma vez só (no primeiro registro), para não duplicar a soma quando há várias atividades
+      await Promise.all(ativs.map((ativ, idx) => dbRef.collection('registros').add(Object.assign({
         data, turno, territorio: terr, profissional: prof, atividade: ativ, obs,
         criadoEm: new Date().toISOString()
-      })));
+      }, (idx===0 && vagas!=='') ? { vagas } : {}))));
       modalBg.classList.remove('open');
       state.ym = ymOf(data); state.week = mondayOf(data);
       document.getElementById('f_obs').value = '';
@@ -1796,8 +2153,320 @@ document.getElementById('modalSave').onclick = async () => {
   }
 };
 
+// ---------- feriados ----------
+// Feriados nacionais entram sozinhos (fixos + Sexta-feira Santa). Carnaval, Corpus Christi, feriados
+// municipais/estaduais e pontos facultativos são marcados à mão (coleção "diasEspeciais").
+const FERIADOS_FIXOS = {
+  '01-01':'Confraternização Universal','04-21':'Tiradentes','05-01':'Dia do Trabalho','09-07':'Independência do Brasil',
+  '10-12':'Nossa Senhora Aparecida','11-02':'Finados','11-15':'Proclamação da República','11-20':'Consciência Negra','12-25':'Natal'
+};
+function pascoaDe(y){
+  const a=y%19,b=Math.floor(y/100),c=y%100,d=Math.floor(b/4),e=b%4,f=Math.floor((b+8)/25),g=Math.floor((b-f+1)/3),
+        h=(19*a+b-d-g+15)%30,i=Math.floor(c/4),k=c%4,l=(32+2*e+2*i-h-k)%7,m=Math.floor((a+11*h+22*l)/451),
+        mes=Math.floor((h+l-7*m+114)/31),dia=((h+l-7*m+114)%31)+1;
+  return new Date(y,mes-1,dia);
+}
+const _cacheFeriados = {};
+function feriadosNacionais(y){
+  if(_cacheFeriados[y]) return _cacheFeriados[y];
+  const mapa = {};
+  Object.keys(FERIADOS_FIXOS).forEach(md => { mapa[y+'-'+md] = FERIADOS_FIXOS[md]; });
+  const sexta = pascoaDe(y); sexta.setDate(sexta.getDate()-2);
+  mapa[sexta.getFullYear()+'-'+pad2(sexta.getMonth()+1)+'-'+pad2(sexta.getDate())] = 'Sexta-feira Santa';
+  return (_cacheFeriados[y] = mapa);
+}
+// Devolve {tipo:'feriado'|'facultativo', nome, origem:'nacional'|'manual'} ou null
+function infoDia(iso){
+  if(!iso) return null;
+  const nac = feriadosNacionais(Number(iso.slice(0,4)))[iso];
+  if(nac) return { tipo:'feriado', nome:nac, origem:'nacional' };
+  const man = DIAS[iso];
+  if(man) return { tipo: man.tipo==='facultativo' ? 'facultativo' : 'feriado', nome: man.nome || '', origem:'manual' };
+  return null;
+}
+function rotuloTipoDia(info){ return info.tipo==='facultativo' ? 'Ponto facultativo' : 'Feriado'; }
+// Data bloqueada para lançamento. Ao editar um registro que JÁ estava nesse dia (antes da marcação), a data antiga continua permitida.
+function dataBloqueada(iso){
+  const info = infoDia(iso); if(!info) return null;
+  if(editingId){ const r = ROWS.find(x=>x.id===editingId); if(r && r.data===iso) return null; }
+  return info;
+}
+function diasEspeciaisNoPeriodo(){
+  const out = [];
+  let ini, fim;
+  if(state.week){ ini = state.week; const d = new Date(state.week+'T00:00:00'); d.setDate(d.getDate()+6); fim = d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate()); }
+  else { const [y,m] = state.ym.split('-').map(Number); ini = state.ym+'-01'; fim = state.ym+'-'+pad2(diasNoMes(y,m)); }
+  const d = new Date(ini+'T00:00:00');
+  for(let guard=0; guard<40; guard++){
+    const iso = d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());
+    if(iso>fim) break;
+    const info = infoDia(iso); if(info) out.push({iso, info});
+    d.setDate(d.getDate()+1);
+  }
+  return out;
+}
+function faixaFeriadosHtml(){
+  const lista = diasEspeciaisNoPeriodo();
+  const itens = lista.map(({iso,info}) => `<span class="it ${info.tipo}"><b>${fmtDia(iso)}</b> ${escHtml(info.nome || rotuloTipoDia(info))}${info.tipo==='facultativo'?' (ponto facultativo)':''}</span>`).join('');
+  return `<div class="fer-faixa"><span class="t">${lista.length ? 'Feriados e pontos facultativos neste período:' : 'Nenhum feriado neste período.'}</span>${itens}<button type="button" class="marcar-dia-btn">Marcar feriado ou ponto facultativo</button></div>`;
+}
+
+// Aviso no formulário de registro quando a data escolhida é feriado
+function verificarFeriadoForm(){
+  const aviso = document.getElementById('f_fer_aviso'), btn = document.getElementById('modalSave');
+  const info = dataBloqueada(fData.value);
+  if(info){
+    aviso.textContent = rotuloTipoDia(info) + (info.nome ? ' (' + info.nome + ')' : '') + ': não é possível lançar atividade neste dia. Escolha outra data.';
+    aviso.style.display = 'block'; btn.disabled = true;
+  } else { aviso.style.display = 'none'; if(btn.textContent!=='Salvando…') btn.disabled = false; }
+}
+fData.addEventListener('input', verificarFeriadoForm);
+fData.addEventListener('change', verificarFeriadoForm);
+
+// Marcar / desmarcar dia
+const diaBg = document.getElementById('modalDiaBg');
+function abrirMarcarDia(isoSugerido){
+  document.getElementById('diaErr').style.display = 'none';
+  document.getElementById('dia_data').value = isoSugerido || '';
+  document.getElementById('dia_tipo').value = 'feriado';
+  document.getElementById('dia_nome').value = '';
+  diaBg.classList.add('open');
+  setTimeout(()=>document.getElementById(isoSugerido ? 'dia_nome' : 'dia_data').focus(), 30);
+}
+document.getElementById('diaCancel').onclick = () => diaBg.classList.remove('open');
+document.getElementById('diaOk').onclick = async () => {
+  const iso = document.getElementById('dia_data').value, tipo = document.getElementById('dia_tipo').value, nome = document.getElementById('dia_nome').value.trim();
+  const err = document.getElementById('diaErr');
+  let msg = '';
+  if(!iso) msg = 'Escolha a data.';
+  else if(!nome) msg = 'Digite o nome ou o motivo (ex.: Carnaval).';
+  else if(infoDia(iso)) msg = 'Esse dia já está marcado como ' + rotuloTipoDia(infoDia(iso)).toLowerCase() + (infoDia(iso).nome ? ' (' + infoDia(iso).nome + ')' : '') + '.';
+  if(msg){ err.textContent = msg; err.style.display = 'block'; return; }
+  const existentes = ROWS.filter(r=>r.data===iso).length;
+  const rotulo = (tipo==='facultativo' ? 'Ponto facultativo' : 'Feriado') + ': ' + nome;
+  const res = await pedirJustificativa('Quem está marcando o dia?',
+    '<b>' + escHtml(fmtDataExtensa(iso)) + '</b><br>' + escHtml(rotulo) +
+    (existentes ? '<br><span style="color:#b3261e">Já existem ' + existentes + ' registro(s) nesse dia. Eles continuam na agenda, mas não dá para lançar novos.</span>' : ''),
+    { semJustificativa:true });
+  if(!res) return;
+  diaBg.classList.remove('open');
+  const histId = await registrarHistorico({ tipo:'dia-marcado', registroId:iso, antes:{ data:iso, tipoDia:tipo, nome },
+    mudancas:[{ campo:'Dia', de:'Dia normal', para:rotulo }], autor:res.autor, justificativa:nome });
+  try{
+    await dbRef.doc('diasEspeciais/'+iso).set({ data:iso, tipo, nome, autor:res.autor, criadoEm:new Date().toISOString() });
+    showToast('Dia marcado: ' + escHtml(fmtDataSimples(iso).slice(0,5)) + ' · ' + escHtml(rotulo) + (histId ? '' : '. Atenção: o histórico não pôde ser gravado.'));
+  }catch(e){
+    await desfazerHistorico(histId);
+    showToast('Não foi possível marcar o dia agora. Confira se as regras do banco incluem "diasEspeciais".');
+  }
+};
+async function desmarcarDia(iso){
+  const man = DIAS[iso]; if(!man) return;
+  const rotulo = (man.tipo==='facultativo' ? 'Ponto facultativo' : 'Feriado') + ': ' + (man.nome || '');
+  const res = await pedirJustificativa('Remover marcação do dia', 'Você vai liberar <b>' + escHtml(fmtDataExtensa(iso)) + '</b> (' + escHtml(rotulo) + ') para lançamentos de novo.');
+  if(!res) return;
+  const histId = await registrarHistorico({ tipo:'dia-desmarcado', registroId:iso, antes:{ data:iso, tipoDia:man.tipo, nome:man.nome||'' },
+    mudancas:[{ campo:'Dia', de:rotulo, para:'Dia normal' }], autor:res.autor, justificativa:res.justificativa });
+  try{
+    await dbRef.doc('diasEspeciais/'+iso).delete();
+    showToast('Marcação removida.' + (histId ? '' : ' Atenção: o histórico não pôde ser gravado.'));
+  }catch(e){
+    await desfazerHistorico(histId);
+    showToast('Não foi possível remover a marcação agora.');
+  }
+}
+
+// ---------- histórico de alterações da agenda ----------
+const LS_AUTOR = 'agendaEmultiAutor';
+const LS_VISTO = 'agendaEmultiHistoricoVisto';
+function lsGet(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
+function lsSet(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
+const CAMPOS_HIST = [['data','Data'],['turno','Turno'],['territorio','Território'],['profissional','Profissional'],['atividade','Atividade'],['obs','Observação'],['vagas','Vagas p/ agendamento']];
+function fmtValorHist(campo, v){
+  v = (v==null ? '' : String(v)).trim();
+  if(campo==='data') return fmtDataSimples(v);
+  if(campo==='profissional') return v || 'Equipe completa';
+  if(campo==='obs') return v || '(vazio)';
+  if(campo==='vagas') return v || 'sem limite';
+  return v || '(vazio)';
+}
+function mudancasEntre(antigo, novo){
+  const out = [];
+  CAMPOS_HIST.forEach(([k,label])=>{
+    const a = (antigo[k]==null ? '' : String(antigo[k])).trim();
+    const b = (novo[k]==null ? '' : String(novo[k])).trim();
+    if(a!==b) out.push({ campo: label, de: fmtValorHist(k,a), para: fmtValorHist(k,b) });
+  });
+  return out;
+}
+function rotuloRegistro(r){
+  return fmtDataSimples(r.data).slice(0,5) + ' ' + (r.turno||'') + ' · ' + (r.territorio||'') + ' · ' + (r.atividade||'') + ' · ' + (r.profissional || 'Equipe completa');
+}
+function snapshotRegistro(r){
+  return { data:r.data||'', turno:r.turno||'', territorio:r.territorio||'', profissional:r.profissional||'', atividade:r.atividade||'', obs:r.obs||'', vagas:(r.vagas==null?'':r.vagas) };
+}
+
+// Janela que pede "quem está alterando" + justificativa. Resolve {autor, justificativa} ou null (cancelou).
+const justBg = document.getElementById('modalJustBg');
+const justAutorSel = document.getElementById('just_autor');
+const justAutorOutro = document.getElementById('just_autor_outro');
+const justTexto = document.getElementById('just_texto');
+const justErr = document.getElementById('justErr');
+(function(){
+  const o0 = document.createElement('option'); o0.value=''; o0.textContent='Selecione seu nome'; justAutorSel.appendChild(o0);
+  PROFISSIONAIS.forEach(([nome])=>{ const o=document.createElement('option'); o.value=nome; o.textContent=nome; justAutorSel.appendChild(o); });
+  const o1 = document.createElement('option'); o1.value='__outro__'; o1.textContent='Outra pessoa (digitar)'; justAutorSel.appendChild(o1);
+  justAutorSel.addEventListener('change', ()=>{ justAutorOutro.style.display = justAutorSel.value==='__outro__' ? '' : 'none'; });
+})();
+function pedirJustificativa(titulo, resumoHtml, opts){
+  opts = opts || {};
+  return new Promise(resolve=>{
+    document.getElementById('justCampo').style.display = opts.semJustificativa ? 'none' : '';
+    document.getElementById('justTitulo').textContent = titulo;
+    document.getElementById('justResumo').innerHTML = resumoHtml;
+    justErr.style.display = 'none';
+    justTexto.value = '';
+    let lembrado = {};
+    try{ lembrado = JSON.parse(lsGet(LS_AUTOR) || '{}') || {}; }catch(e){}
+    justAutorSel.value = [...justAutorSel.options].some(o=>o.value===lembrado.sel) ? lembrado.sel : '';
+    justAutorOutro.value = lembrado.outro || '';
+    justAutorOutro.style.display = justAutorSel.value==='__outro__' ? '' : 'none';
+    justBg.classList.add('open');
+    setTimeout(()=>{ (justAutorSel.value ? justTexto : justAutorSel).focus(); }, 30);
+    const ok = document.getElementById('justOk'), cancel = document.getElementById('justCancel');
+    function fechar(res){
+      justBg.classList.remove('open');
+      ok.onclick = null; cancel.onclick = null; justBg.onkeydown = null;
+      resolve(res);
+    }
+    ok.onclick = () => {
+      const sel = justAutorSel.value;
+      const autor = sel==='__outro__' ? justAutorOutro.value.trim() : sel;
+      const texto = justTexto.value.trim();
+      let erro = '';
+      if(!autor) erro = 'Informe quem está fazendo a alteração.';
+      else if(!opts.semJustificativa && texto.length < 5) erro = 'Escreva a justificativa (pelo menos algumas palavras).';
+      if(erro){ justErr.textContent = erro; justErr.style.display = 'block'; return; }
+      lsSet(LS_AUTOR, JSON.stringify({ sel, outro: sel==='__outro__' ? autor : '' }));
+      fechar({ autor, justificativa: texto });
+    };
+    cancel.onclick = () => fechar(null);
+    justBg.onkeydown = e => { if(e.key==='Escape') fechar(null); };
+  });
+}
+
+// Grava uma entrada no histórico. Devolve o id, ou null se não conseguiu (ex.: regras do banco ainda sem "historico").
+async function registrarHistorico(e){
+  if(!dbRef) return null;
+  try{
+    const ref = dbRef.collection('historico').doc();
+    minhasEntradasHist.add(ref.id);
+    await ref.set({
+      tipo: e.tipo, registroId: e.registroId || '', antes: e.antes || {}, mudancas: e.mudancas || [],
+      autor: e.autor || '', justificativa: e.justificativa || '', criadoEm: new Date().toISOString()
+    });
+    return ref.id;
+  }catch(err){
+    return null;
+  }
+}
+async function desfazerHistorico(id){
+  if(!id || !dbRef) return;
+  try{ await dbRef.doc('historico/'+id).delete(); }catch(e){}
+}
+
+function fmtQuando(iso){
+  const d = new Date(iso); if(isNaN(d)) return '';
+  const p = n => String(n).padStart(2,'0');
+  return p(d.getDate())+'/'+p(d.getMonth()+1)+'/'+d.getFullYear()+' '+p(d.getHours())+':'+p(d.getMinutes());
+}
+function histNaoLidas(){
+  const visto = lsGet(LS_VISTO) || '';
+  return HIST.filter(h => h.criadoEm > visto && !minhasEntradasHist.has(h.id));
+}
+function marcarHistoricoVisto(){
+  let max = lsGet(LS_VISTO) || '';
+  HIST.forEach(h => { if(h.criadoEm > max) max = h.criadoEm; });
+  lsSet(LS_VISTO, max || new Date().toISOString());
+}
+function atualizarContadorHistorico(){
+  if(state.tab==='historico') marcarHistoricoVisto();
+  const n = histNaoLidas().length;
+  const bell = document.getElementById('bellCount');
+  if(bell){ bell.textContent = n ? (n>99 ? '99+' : String(n)) : ''; }
+  const b = document.getElementById('bellBtn');
+  if(b) b.title = n ? (n + ' alteração(ões) nova(s) na agenda') : 'Alterações na agenda';
+  const c = document.getElementById('cntHistorico');
+  if(c) c.textContent = HIST.length || '';
+}
+document.getElementById('bellBtn').addEventListener('click', ()=>{ state.tab = 'historico'; render(); window.scrollTo({top:0, behavior:'smooth'}); });
+
+const TIPO_HIST = { edicao:'Edição', remocao:'Remoção', restauracao:'Restauração', 'dia-marcado':'Dia marcado', 'dia-desmarcado':'Marcação removida' };
+function renderHistorico(){
+  const el = document.getElementById('tab-historico');
+  if(historicoError){
+    el.innerHTML = '<div class="empty-note">O histórico ainda não está liberado no banco de dados (' + escHtml(historicoError) + '). Atualize as regras do Firestore incluindo a coleção "historico" e recarregue a página.</div>';
+    return;
+  }
+  const q = state.q.trim();
+  const lista = HIST.slice().sort((a,b)=> (b.criadoEm||'').localeCompare(a.criadoEm||'')).filter(h=>{
+    if(!q) return true;
+    const a = h.antes || {};
+    const hay = [h.autor, h.justificativa, TIPO_HIST[h.tipo], a.nome, a.territorio, a.profissional, a.atividade, a.turno, a.obs, fmtDataSimples(a.data),
+      (h.mudancas||[]).map(m=>m.campo+' '+m.de+' '+m.para).join(' ')].join(' ').toLowerCase();
+    return hay.includes(q);
+  });
+  let html = '<div class="hist-head"><span class="t">Histórico de alterações da agenda</span><span class="s">Toda edição e remoção de registro fica aqui, com quem alterou e por quê. Visível para toda a equipe.</span></div>';
+  if(!lista.length){
+    html += '<div class="empty-note">' + (HIST.length ? 'Nenhuma alteração encontrada para essa busca.' : 'Nenhuma alteração registrada ainda. Quando alguém editar ou remover um registro da agenda, aparecerá aqui.') + '</div>';
+    el.innerHTML = html; return;
+  }
+  lista.slice(0,300).forEach(h=>{
+    const a = h.antes || {};
+    const tipo = TIPO_HIST[h.tipo] ? h.tipo : 'edicao';
+    html += '<div class="hist-item '+tipo+'"><div class="hist-top"><span class="hist-badge">'+TIPO_HIST[tipo]+'</span>'
+      + '<span>por <b>'+escHtml(h.autor||'(sem nome)')+'</b></span><span class="hist-quando">'+escHtml(fmtQuando(h.criadoEm))+'</span></div>';
+    if(tipo.indexOf('dia-')===0) html += '<div class="hist-reg">'+escHtml(fmtDataSimples(a.data))+' · '+escHtml((a.tipoDia==='facultativo'?'Ponto facultativo':'Feriado')+(a.nome?': '+a.nome:''))+'</div>';
+    else if(a.data) html += '<div class="hist-reg">'+escHtml(rotuloRegistro(a))+'</div>';
+    if((tipo==='edicao' || tipo.indexOf('dia-')===0) && (h.mudancas||[]).length){
+      html += '<div class="hist-mud">' + h.mudancas.map(m => '<div><b>'+escHtml(m.campo)+':</b> <span class="de">'+escHtml(m.de)+'</span> → '+escHtml(m.para)+'</div>').join('') + '</div>';
+    }
+    if(h.justificativa) html += '<div class="hist-just"><b>Justificativa</b>'+escHtml(h.justificativa)+'</div>';
+    html += '</div>';
+  });
+  if(lista.length>300) html += '<div class="empty-note">Mostrando as 300 alterações mais recentes.</div>';
+  el.innerHTML = html;
+}
+function avisarAlteracaoDeOutro(h){
+  const a = h.antes || {};
+  const onde = a.data ? (fmtDataSimples(a.data).slice(0,5) + (a.turno ? ' ' + a.turno + ' · ' + (a.territorio||'') : '')) : 'um registro';
+  const verbo = h.tipo==='remocao' ? 'removeu um registro da agenda' : (h.tipo==='restauracao' ? 'restaurou um registro da agenda' : (h.tipo==='dia-marcado' ? 'marcou um dia como feriado/ponto facultativo' : (h.tipo==='dia-desmarcado' ? 'removeu a marcação de um dia' : 'editou a agenda')));
+  let just = h.justificativa || ''; if(just.length>90) just = just.slice(0,87)+'…';
+  showToast('<b>'+escHtml(h.autor||'Alguém')+'</b> '+verbo+': '+escHtml(onde)+(just ? '. Motivo: '+escHtml(just) : ''), null, null, 9000);
+}
+function receberHistorico(snap){
+  const novos = snap.docs.map(d => ({ id: d.id, ...d.data() })).filter(h => h.criadoEm);
+  historicoError = null;
+  const chegaram = [];
+  novos.forEach(h => {
+    if(!histIdsConhecidos.has(h.id)){
+      histIdsConhecidos.add(h.id);
+      if(!histPrimeiraCarga && !minhasEntradasHist.has(h.id)) chegaram.push(h);
+    }
+  });
+  HIST = novos;
+  histPrimeiraCarga = false;
+  if(!lsGet(LS_VISTO)) lsSet(LS_VISTO, new Date().toISOString());
+  if(chegaram.length){
+    chegaram.sort((a,b)=>a.criadoEm.localeCompare(b.criadoEm));
+    if(chegaram.length===1) avisarAlteracaoDeOutro(chegaram[0]);
+    else showToast('<b>'+chegaram.length+' alterações novas</b> na agenda. Veja na aba Histórico.', null, null, 9000);
+  }
+  render();
+}
+
 let toastTimer = null;
-function showToast(msg, undoRow){
+function showToast(msg, undoRow, onUndo, duracao){
   const toast = document.getElementById('toast');
   toast.innerHTML = msg;
   if(undoRow){
@@ -1808,13 +2477,14 @@ function showToast(msg, undoRow){
         const {id, ...data} = undoRow;
         await dbRef.collection('registros').doc(id).set(data);
         toast.classList.remove('show');
+        if(onUndo) await onUndo();
       }catch(e){}
     };
     toast.appendChild(btn);
   }
   toast.classList.add('show');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(()=>toast.classList.remove('show'), 4200);
+  toastTimer = setTimeout(()=>toast.classList.remove('show'), duracao || 4200);
 }
 
 // ---------- conexão com o banco ----------
@@ -1846,10 +2516,14 @@ async function init(){
   dbRef = db;
   db.collection('registros').onSnapshot(
     (snap) => {
-      ROWS = snap.docs.map(d => ({ id: d.id, ...d.data() })).filter(r => r.data && r.territorio && r.atividade);
+      const novasRows = snap.docs.map(d => ({ id: d.id, ...d.data() })).filter(r => r.data && r.territorio && r.atividade);
+      const assinatura = JSON.stringify(novasRows);
+      const mudou = !dbReady || assinatura !== assinaturaRows;
+      assinaturaRows = assinatura;
+      ROWS = novasRows;
       dbReady = true;
       setStatus(true, snap.metadata.fromCache ? 'sincronizando…' : 'ao vivo, com a equipe');
-      render();
+      if(mudou) render();
       if(isGestor) migrarTerritoriosAntigos();
     },
     (err) => {
@@ -1858,11 +2532,29 @@ async function init(){
       document.getElementById('dbWarn').textContent = 'Perdemos a conexão com o armazenamento (' + err.code + '). Recarregue a página.';
     }
   );
+  db.collection('historico').onSnapshot(
+    receberHistorico,
+    (err) => { historicoError = err.code || 'erro'; render(); }
+  );
+  db.collection('diasEspeciais').onSnapshot(
+    (snap) => {
+      const novos = {};
+      snap.docs.forEach(d => { const v = d.data(); if(v && v.tipo) novos[d.id] = v; });
+      const mudou = JSON.stringify(novos) !== JSON.stringify(DIAS) || diasError !== null;
+      DIAS = novos; diasError = null;
+      if(mudou) render();
+    },
+    (err) => { diasError = err.code || 'erro'; }
+  );
   db.collection('agendamentos').onSnapshot(
     (snap) => {
-      AGENDAMENTOS = snap.docs.map(d => ({ id: d.id, ...d.data() })).filter(a => a.data && a.nome && a.demanda && a.unidade);
+      const novosAg = snap.docs.map(d => ({ id: d.id, ...d.data() })).filter(a => a.data && a.nome && a.demanda && a.unidade);
+      const assinatura = JSON.stringify(novosAg);
+      const mudou = assinatura !== assinaturaAg || agendamentosError !== null;
+      assinaturaAg = assinatura;
+      AGENDAMENTOS = novosAg;
       agendamentosError = null;
-      render();
+      if(mudou) render();
       if(isGestor) migrarTerritoriosAntigos();
     },
     (err) => {
