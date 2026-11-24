@@ -176,13 +176,16 @@
   .cal-cell.reuniao:hover{border-color:#4a63d6;}
   .cal-tag{align-self:flex-start;font-size:9px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;border-radius:999px;padding:1px 7px;color:#fff;}
   .cal-tag.feriado{background:#b98500;}
-  .cal-tag.reuniao{background:#4a63d6;}
+  .cal-tag.reuniao,.cal-tag.reuniao-manha,.cal-tag.reuniao-tarde{background:#4a63d6;}
+  .cal-cell.reuniao-manha{border-top:4px solid #4a63d6;}
+  .cal-cell.reuniao-tarde{border-bottom:4px solid #4a63d6;}
+  .cal-legenda i.reuniao-faixa{background:var(--surface);border-color:var(--line);border-top:4px solid #4a63d6;}
   .cal-legenda{display:flex;flex-wrap:wrap;gap:14px;font-size:11px;color:var(--ink2);margin-bottom:10px;}
   .cal-legenda span{display:inline-flex;align-items:center;gap:6px;}
   .cal-legenda i{width:12px;height:12px;border-radius:3px;display:inline-block;border:1.5px solid;}
   .cal-legenda i.feriado{background:rgba(254,194,49,.35);border-color:#e0a800;}
   .cal-legenda i.reuniao{background:rgba(74,99,214,.25);border-color:#6f86e0;}
-  @media (max-width:640px){ .cal-tag{display:none;} .cal-cell.feriado .cal-daynum::before,.cal-cell.reuniao .cal-daynum::before{content:'';display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:4px;} .cal-cell.feriado .cal-daynum::before{background:#b98500;} .cal-cell.reuniao .cal-daynum::before{background:#4a63d6;} }
+  @media (max-width:640px){ .cal-tag{display:none;} .cal-cell.feriado .cal-daynum::before,.cal-cell.reuniao .cal-daynum::before,.cal-cell.reuniao-manha .cal-daynum::before,.cal-cell.reuniao-tarde .cal-daynum::before{content:'';display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:4px;} .cal-cell.feriado .cal-daynum::before{background:#b98500;} .cal-cell.reuniao .cal-daynum::before,.cal-cell.reuniao-manha .cal-daynum::before,.cal-cell.reuniao-tarde .cal-daynum::before{background:#4a63d6;} }
   .cal-day-terr{margin-bottom:14px;}
   .cal-day-terr:last-child{margin-bottom:0;}
   .cal-day-terr-head{font-weight:800;font-size:12.5px;border-left:4px solid;padding:2px 0 6px 9px;margin-bottom:2px;}
@@ -409,7 +412,10 @@
     <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><rect x="2" y="3" width="12" height="11" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M2 6.5h12M5 1.5v3M11 1.5v3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
     <select id="mesFiltro" aria-label="Filtrar por mês"></select>
   </div>
-  <div class="chipbar" id="semChips"></div>
+  <div class="filtro-mes" id="semChips">
+    <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 4h12M2 8h12M2 12h12" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+    <select id="semFiltro" aria-label="Filtrar por semana"></select>
+  </div>
   <input id="q" type="text" placeholder="Buscar profissional, núcleo ou atividade…">
   <span class="spacer"></span>
   <button class="clearbtn" id="clearBtn">Limpar filtros</button>
@@ -784,26 +790,23 @@ function renderMesFiltro(){
 }
 
 function renderSemanaChips(){
+  // Lista suspensa de semanas (igual ao filtro de mês). Só refaz as opções quando elas mudam de verdade
+  // e nunca enquanto a pessoa está com o menu aberto.
   const weeks = new Set(ROWS.filter(r=>ymOf(r.data)===state.ym).map(r=>mondayOf(r.data)));
   if(state.ym === ymOf(todayISO())) weeks.add(mondayOf(todayISO()));
+  if(state.week) weeks.add(state.week);
   const sorted = [...weeks].sort();
-  const el = document.getElementById('semChips');
-  const sigSem = sorted.join('|') + '#' + String(state.week);
-  if(el.dataset.sig === sigSem) return; // nada mudou: não redesenha à toa
-  el.dataset.sig = sigSem;
-  el.innerHTML = '';
-  const allChip = document.createElement('div');
-  allChip.className = 'chip' + (state.week===null?' active':'');
-  allChip.textContent = 'Todas as semanas';
-  allChip.onclick = () => { state.week = null; render(); };
-  el.appendChild(allChip);
-  sorted.forEach(w=>{
-    const c = document.createElement('div');
-    c.className = 'chip' + (state.week===w?' active':'');
-    c.textContent = weekLabel(w);
-    c.onclick = () => { state.week = w; render(); };
-    el.appendChild(c);
-  });
+  const el = document.getElementById('semFiltro');
+  const sig = sorted.join('|');
+  if(el.dataset.sig !== sig){
+    if(document.activeElement === el) return;
+    el.innerHTML = '<option value="">Todas as semanas</option>' + sorted.map(w=>`<option value="${w}">${weekLabel(w)}</option>`).join('');
+    el.dataset.sig = sig;
+  }
+  const alvo = state.week || '';
+  if(el.value !== alvo && document.activeElement !== el) el.value = alvo;
+  el.onchange = () => { state.week = el.value || null; render(); };
+  el.onblur = () => { renderSemanaChips(); };
 }
 
 async function removeRegistro(id){
@@ -970,9 +973,23 @@ function renderAgendaCalendario(){
   // não pode apagar a marcação). Feriado tem prioridade sobre reunião.
   const ATIV_REUNIAO = ['Reuniões','Reunião Geral eMulti','Reunião com a Estratégia de Saúde da Família'];
   const tipoDoDia = {};
+  // Reunião só pinta o dia quando é a ÚNICA atividade dele. Se ocupa só um turno (e o outro tem outras atividades),
+  // vira etiqueta + faixa fina (em cima = manhã, embaixo = tarde). Reunião misturada com outras atividades no mesmo turno não marca nada.
+  const resumoDia = {};
   ROWS.forEach(r=>{
+    const d = resumoDia[r.data] = resumoDia[r.data] || { n:0, r:0, t:{} };
+    const ehR = ATIV_REUNIAO.includes(r.atividade);
+    d.n++; if(ehR) d.r++;
+    const t = d.t[r.turno] = d.t[r.turno] || { n:0, r:0 };
+    t.n++; if(ehR) t.r++;
     if(r.atividade==='Feriado') tipoDoDia[r.data] = 'feriado';
-    else if(ATIV_REUNIAO.includes(r.atividade) && tipoDoDia[r.data]!=='feriado') tipoDoDia[r.data] = 'reuniao';
+  });
+  Object.keys(resumoDia).forEach(iso=>{
+    if(tipoDoDia[iso]==='feriado') return;
+    const d = resumoDia[iso];
+    if(d.r>0 && d.n===d.r) tipoDoDia[iso] = 'reuniao';
+    else if(d.t['Manhã'] && d.t['Manhã'].r>0 && d.t['Manhã'].n===d.t['Manhã'].r) tipoDoDia[iso] = 'reuniao-manha';
+    else if(d.t['Tarde'] && d.t['Tarde'].r>0 && d.t['Tarde'].n===d.t['Tarde'].r) tipoDoDia[iso] = 'reuniao-tarde';
   });
   // feriado automático (nacional) ou marcado à mão tem prioridade sobre qualquer outra marcação
   const nomeDoDia = {};
@@ -1014,7 +1031,7 @@ function renderAgendaCalendario(){
     if(tipo) classes.push(tipo);
     cellsHtml += `<div class="${classes.join(' ')}" data-date="${iso}" data-in-month="${dentroDoMes?'1':'0'}">
       <div class="cal-daynum">${dNum}</div>
-      ${tipo ? `<span class="cal-tag ${tipo}" title="${escHtml(nomeDoDia[iso]||'')}">${tipo==='feriado'?'Feriado':(tipo==='facultativo'?'Facultativo':'Reunião')}</span>` : ''}
+      ${tipo ? `<span class="cal-tag ${tipo}" title="${escHtml(nomeDoDia[iso]||'')}">${tipo==='feriado'?'Feriado':(tipo==='facultativo'?'Facultativo':(tipo==='reuniao-manha'?'Reunião manhã':(tipo==='reuniao-tarde'?'Reunião tarde':'Reunião')))}</span>` : ''}
       <div class="cal-pills">${pillsHtml}</div>
     </div>`;
   }
@@ -1028,7 +1045,7 @@ function renderAgendaCalendario(){
         <button class="btn-secondary" id="calNext" type="button">Próximo mês ›</button>
         <button class="btn-secondary marcar-dia" id="calMarcar" type="button">Marcar feriado / ponto facultativo</button>
       </div>
-      <div class="cal-legenda"><span><i class="feriado"></i>Feriado</span><span><i class="facultativo"></i>Ponto facultativo</span><span><i class="reuniao"></i>Reunião</span></div>
+      <div class="cal-legenda"><span><i class="feriado"></i>Feriado</span><span><i class="facultativo"></i>Ponto facultativo</span><span><i class="reuniao"></i>Reunião (única atividade do dia)</span><span><i class="reuniao-faixa"></i>Reunião só em um turno (faixa em cima = manhã, embaixo = tarde)</span></div>
       <div class="cal-weekdays">${DIA_ABBR.map(d=>`<div>${d}</div>`).join('')}</div>
       <div class="cal-grid">${cellsHtml}</div>
     </div>
